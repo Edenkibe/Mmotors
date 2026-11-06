@@ -7,5 +7,4 @@ pip install -r requirements.txt
 python manage.py check
 python manage.py collectstatic --noinput
 
-echo "Build Mmotors terminé."
-```
+echo "Build Mmotors termine."
