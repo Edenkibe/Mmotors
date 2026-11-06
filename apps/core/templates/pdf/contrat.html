@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+      
+        <title>
+            {% block title %}sign your contract {% endblock %}
+        </title>
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+
+        <!-- Favicons -->
+
+        <title>Official contrat</title>
+        <style>
+            body {
+                font-family: "Times New Roman", serif;
+                margin: 60px;
+                line-height: 1.6;
+                font-size: 16px;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                text-align: right;
+            }
+
+            .company {
+                font-weight: bold;
+                font-size: 18px;
+            }
+
+            .date {
+                margin-top: 10px;
+            }
+
+            .recipient {
+                margin-top: 40px;
+            }
+
+            .subject {
+                margin-top: 30px;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+
+            .content {
+                margin-top: 20px;
+                text-align: justify;
+            }
+
+            .signature {
+                margin-top: 60px;
+            }
+
+            .footer {
+                margin-top: 80px;
+                font-size: 12px;
+                text-align: center;
+                color: gray;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <!-- Header -->
+        {% load static %}
+       
+       
+        <div class="header">
+            <div>
+                 {% if logo_path %}
+                    <img src="{{ logo_path }}" alt="Live Orphanage Logo" style="height:200px; width:auto;"/>
+                 {% endif %}
+            </div>
+            <div>
+
+                <div class="company">Mmotors</div>
+                93, rue andré bollier<br>
+                Lyon, France<br>
+                Email: mmotors@gmail.com
+
+                <div class="date">
+                    Date: {{ date }}
+                </div>
+            </div>
+           
+        </div>
+
+        <!-- Recipient -->
+        <div class="recipient">
+            Buyer:<br>
+            <strong>{{ demandes.client.first_name }} {{ demandes.client.last_name }}</strong><br>
+            {{ demandes.client.email }}
+        </div>
+
+        <!-- Subject -->
+        <div class="subject">
+           VEHICLE PURCHASE AGREEMENT Contrat (ID: {{ demandes.id }})
+        </div>
+
+        <!-- Letter Content -->
+        <div class="content">
+            Dear {{ demandes.client.first_name }} {{ demandes.client.last_name }},
+
+            <br>
+            car information:
+            <br> 
+            <strong>{{ demandes.vehicule.marque }} {{ demandes.vehicule.modele }}</strong> <br>
+            <strong>{{ demandes.vehicule.prix }} €, condition: {{ demandes.vehicule.etat }}</strong><br>
+            <strong>Boite: {{ demandes.vehicule.boite }}, Carburant: {{ demandes.vehicule.carburant }}</strong>.
+
+            <br>
+                {% if demandes.verification == 'accepté' %}
+                    <strong class="text-success">{{ demandes.verification }}</strong>
+                {% else %}
+                 <strong class="text-danger">{{ demandes.verification }}</strong>    
+                {% endif %}
+            <br>
+        {% if demandes.verification == "accepté" %}
+           By signing this contract, you confirm that you have read, understood, and 
+           accepted all the terms and conditions related to the purchase of the vehicle 
+           described in this agreement.
+           You acknowledge the vehicle information, the agreed purchase price, the payment 
+           conditions, and the responsibilities of both parties. Your signature confirms your 
+           agreement to proceed with this transaction under the conditions stated in this contract.
+
+           {% else %}
+           sorry your demand has been rejected by the administration due to the document issue
+        {% endif %}
+            <br><br>
+
+            Thank you for your trust and cooperation.
+            <strong>{{ demandes.client.username }}</strong>           
+            <br>
+            Sincerely,
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            This document is official Mmotors Ltd.
+        </div>
+
+    </body>
+</html>

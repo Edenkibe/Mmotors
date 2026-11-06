@@ -1,0 +1,38 @@
+
+Elles ne doivent pas être présentes dans le fichier. Pour éviter toute erreur, remplace son contenu avec cette commande PowerShell :
+
+```powershell
+@'
+# Environnement virtuel
+env/
+venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Bases locales
+db.sqlite3
+*.sqlite3
+
+# Celery Beat
+celerybeat-schedule*
+celerybeat.pid
+
+# Fichiers générés
+staticfiles/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Système
+.DS_Store
+Thumbs.db
+'@ | Set-Content -Encoding utf8 .gitignore

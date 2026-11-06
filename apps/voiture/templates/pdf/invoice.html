@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+      
+        <title>
+            {% block title %}sign your contract {% endblock %}
+        </title>
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+
+        <!-- Favicons -->
+
+        <title>Official contrat</title>
+        <style>
+            body {
+                font-family: "Times New Roman", serif;
+                margin: 60px;
+                line-height: 1.6;
+                font-size: 16px;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                text-align: right;
+            }
+
+            .company {
+                font-weight: bold;
+                font-size: 18px;
+            }
+
+            .date {
+                margin-top: 10px;
+            }
+
+            .recipient {
+                margin-top: 40px;
+            }
+
+            .subject {
+                margin-top: 30px;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+
+            .content {
+                margin-top: 20px;
+                text-align: justify;
+            }
+
+            .signature {
+                margin-top: 60px;
+            }
+
+            .footer {
+                margin-top: 80px;
+                font-size: 12px;
+                text-align: center;
+                color: gray;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <!-- Header -->
+        {% load static %}
+       
+       
+        <div class="header">
+            <div>
+                 {% if logo_path %}
+                    <img src="{{ logo_path }}" alt="Live Orphanage Logo" style="height:200px; width:auto;"/>
+                 {% endif %}
+            </div>
+            <div>
+
+                <div class="company">Mmotors</div>
+                93, rue andré bollier<br>
+                Lyon, France<br>
+                Email: mmotors@gmail.com
+
+                <div class="date">
+                    Date: {{ date }}
+                </div>
+            </div>
+           
+        </div>
+
+        <!-- Recipient -->
+        <div class="recipient">
+            Buyer:<br>
+            <strong>{{ demandes.client.first_name }} {{ demandes.client.last_name }}</strong><br>
+            {{ demandes.client.email }}
+        </div>
+
+        <!-- Subject -->
+        <div class="subject">
+           INVOICE (ID: {{ demandes.id }})
+        </div>
+
+        <!-- Letter Content -->
+        <div class="content">
+            Dear {{ demandes.client.first_name }} {{ demandes.client.last_name }},
+
+            <br>
+            car information:
+            <br> 
+            <strong>{{ demandes.vehicule.marque }} {{ demandes.vehicule.modele }}</strong> <br>
+            <strong>{{ demandes.vehicule.prix }} €, condition: {{ demandes.vehicule.etat }}</strong><br>
+            <strong>Boite: {{ demandes.vehicule.boite }}, Carburant: {{ demandes.vehicule.carburant }}</strong>.
+
+            <br>
+            <strong class="text-success" style="font-size: 50px;">{{ demandes.deal }}</strong>
+            <br>
+             
+            <br><br>
+
+            This Invoice approve that you bought this car   
+            
+            <br>
+            Sincerely, Mmotors
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            This document is official Mmotors Ltd.
+        </div>
+
+    </body>
+</html>

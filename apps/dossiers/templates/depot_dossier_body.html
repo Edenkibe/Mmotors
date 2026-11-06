@@ -1,0 +1,132 @@
+<!-- Hero Section -->
+{% load static %}
+<section id="hero" class="hero section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-">
+                <h2 style="text-transform: uppercase;font-weight: bolder;">depose ton dossier pour acheter cette voiture</small></h2>
+            </div>
+        </div>
+    <hr>
+    </div>
+    <br>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    {% if dossier_exist %}
+        <div class="row align-items-center">
+            <div class="alert alert-warning">
+                <p>{{ count }}
+                    {% if count > 1  %}
+                         persons are  requesting this car
+                         {% else %}
+                         person  requesting this car
+                    {% endif %}
+                     </p>             
+                <h6>Your are already demanding this car please wait until the administration will responde to you and you will see the link to buy</small></h2>         
+            </div>
+            <a href="{% url 'voitures:vente_car' %}">View more cars</a>
+        </div>
+    {% else %}
+      <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content" data-aos="fade-up" data-aos-delay="200">
+          <h2>{{ get_car.marque }},{{ get_car.modele }}</h2>
+            <p class="text-success">{{ count }}
+                    {% if count > 1  %}
+                          requests on this car
+                         {% else %}
+                          request on this car
+                    {% endif %}
+            </p>       
+          <p>{{ get_car.description }}</p>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              {% if  get_car.type == 'Location' %}
+                <h3>{{ get_car.prix }} € /<small>jour</small> </h3>
+                {% else %}
+                <h3>{{ get_car.prix }} €</h3>
+              {% endif %}
+             
+              <p>Etat: {{ get_car.etat }}</p>
+            </div>
+            <div class="stat-item">
+              <h3>{{ get_car.annee }} <small>annee</small></h3>
+              <p>carburant: {{ get_car.carburant }}</p>
+            </div>
+            <div class="stat-item">
+              <h3>
+                {{ get_car.kilometre }} km
+              </h3>
+              <p>Boite: {{ get_car.boite }}</p>
+            </div>
+          </div>
+
+          <div class="hero-btns">
+            
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+         <div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h2 style="text-transform: uppercase;font-weight: bolder;">Depot du dossier</h2>
+                <p class="alert alert-warning">
+                    Pour déposer votre dossier, veuillez fournir les documents suivants :
+                        <strong>Documents requis :</strong>
+                        <ul>
+                            <li>Une pièce d'identité en cours de validité ;</li>
+                            <li>Un justificatif de domicile ;</li>
+                            <li>Un justificatif d'activité professionnelle (contrat de travail, attestation de l'employeur).</li>
+                        </ul>
+                    Merci de regrouper l'ensemble de ces documents dans un seul fichier au format PDF, puis de le déposer sur la plateforme.
+                </p>
+                <div class="row">
+                    <div class="col-lg-6  mb-3">                      
+                        {{ form.nom_complet}} 
+                        {% if form.nom_complet.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.nom_complet.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-6 mb-3">                       
+                        {{ form.adresse}} 
+                        {% if form.adresse.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.adresse.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        {{ form.email}} 
+                        {% if form.email.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.email.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        {{ form.telephone}} 
+                        {% if form.telephone.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.telephone.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-12 form-group mb-3">
+                     {{ form.piece_identite }}
+
+                        {% if form.piece_identite.errors %}
+                            <div class="text-danger">
+                                {{ form.piece_identite.errors.0 }}
+                            </div>
+                        {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+         </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    <br>
+    
+  </div>
+</section>
+<!-- /Hero Section -->

@@ -1,0 +1,122 @@
+<!-- Hero Section -->
+{% load static %}
+<section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content" data-aos="fade-up" data-aos-delay="200">
+          <h2>{{ get_car.marque }},{{ get_car.modele }}</h2>
+          
+           <div class="hero-btns">
+                     
+            {% if user.is_superuser %}
+               {% if get_car.disponibilite == "visible" %}
+                  <a href="{% url 'core:change_disponibilite' id=get_car.id %}" class="btn btn-outline dispo_car">
+                    <span class="disponibilite">La voiture est visible</span> 
+                  </a>
+                {% else %}
+                   <a href="{% url 'core:change_disponibilite' id=get_car.id %}" class="btn btn-outline dispo_car">
+                    <span class="disponibilite">La voiture est invisible</span> 
+                  </a>
+                {% endif %}
+              <a href="{% url 'core:delete_car' id=get_car.id %}" class="btn btn-danger">effacer</a>
+              {% if check %}
+                 <a href="" class="btn btn-danger">Pub existe</a>
+
+                 {% else %}
+                 <a href="{% url 'promotion:create_promotion' id=get_car.id %}" class="btn btn-primary">Promouvoir</a>         
+              {% endif %}            
+              
+            {% endif %}
+            
+          </div>
+          <p>{{ get_car.description }}</p>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              {% if  get_car.type == 'Location' %}
+                <h3>{{ get_car.prix }} € /<small>jour</small> </h3>
+                {% else %}
+                <h3>{{ get_car.prix }} €</h3>
+              {% endif %}
+             
+              <p>Etat: {{ get_car.etat }}</p>
+            </div>
+            <div class="stat-item">
+              <h3>{{ get_car.annee }} <small>annee</small></h3>
+              <p>carburant: {{ get_car.carburant }}</p>
+            </div>
+            <div class="stat-item">
+              <h3>
+                {{ get_car.kilometre }} km
+              </h3>
+              <p>Boite: {{ get_car.boite }}</p>
+            </div>
+          </div>
+
+          <div class="hero-btns">
+            {% if get_car.type == 'Location' %}
+            <a href="#contact" class="btn btn-primary">Prendre en location</a>
+            {% else %}
+            <a href="{% url 'dossiers:depot_dossier' id=get_car.id %}" class="btn btn-primary">Acheter</a>
+            {% endif %}
+            {% if user.is_superuser %}
+              <a href="{% url 'core:edit_car' id=get_car.id %}" class="btn btn-outline">Modifier</a>
+              <a href="{% url 'core:basculer_type' id=get_car.id %}" class="btn btn-primary">
+                  <span class="show">
+                      {% if get_car.type == "Location" %}
+                          Basculer en Achat
+                      {% else %}
+                          Basculer en Location
+                      {% endif %}
+                  </span>
+              </a>
+              
+            {% endif %}
+            
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-image" data-aos="zoom-out" data-aos-delay="300">
+            {% with main_photo=get_car.photos.first %}
+                {% if main_photo %}
+                    <img src="{{ main_photo.get_picture_url }}" alt="{{ car.modele }}" style="height: 390px;object-fit: cover;">
+                {% else %}
+                    <p>No main photo available.</p>
+                {% endif %}
+            {% endwith %}
+        </div>
+      </div>
+    </div>
+    <br>
+    <h2>all image car of {{ get_car.marque }},{{ get_car.modele }}</h2>
+    <div class="row align-items-center">     
+      {% for photo in photos %}
+      <div class="col-lg-4" data-aos="fade-left" data-aos-delay="300">
+        <div class="featured-image-container">
+          <img
+            src="{{ photo.get_picture_url }}"
+            alt="{{ photo.voiture.marque }}"
+            class="img-fluid" style="height: 500px; width: 500px;object-fit: cover;"
+          />
+          <div class="floating-badge">
+            <i class="bi bi-award"></i>
+            <span>{{ photo.voiture.marque }},{{ photo.voiture.modele }}</span>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p>No photos found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<!-- /Hero Section -->

@@ -1,0 +1,72 @@
+{% load static %}
+  {% for car in results %}
+        <div class="col-lg-4 col-md-6">
+          <div class="card shadow-sm">
+            {% with main_photo=car.photos.first %} {% if main_photo %}
+            <img
+              src="{{ main_photo.get_picture_url }}"
+              class="card-img-top"
+              width="100%"
+              height="270"
+              style="object-fit: cover"
+            />
+            {% endif %} {% endwith %}
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <h6>{{ car.marque }}, <small>{{ car.modele }}</small></h6>
+                <h6>
+                  {% if car.type == 'Location' %} {{ car.prix }} €/
+                  <small>jour</small>
+                  {% else %} {{ car.prix }} € {% endif %}
+                </h6>
+                <small>
+                  <a
+                    href=""
+                    title="More Details"
+                    style="background: red; color: white; padding: 10px"
+                  >
+                    {% if car.type == 'Location' %} En location {% else %} En
+                    vente {% endif %}
+                  </a>
+                </small>
+              </div>
+              <div class="d-flex">
+                {% if car.etat == 'New' %}
+                <div>⭐⭐⭐⭐⭐ &nbsp; {{ car.etat }}</div>
+                {% elif car.etat == 'super' %}
+                <div>⭐⭐⭐⭐☆ &nbsp; {{ car.etat }}</div>
+
+                {% else %}
+                <div>⭐⭐⭐☆☆ &nbsp; {{ car.etat }}</div>
+                {% endif %}
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  {% if car.has_achat %}
+                  <a href="{% url 'dossiers:depot_dossier' id=car.id %}" class="btn btn-sm btn-danger">you booked</a>
+                  {% else %}
+                  <a href="{% url 'dossiers:depot_dossier' id=car.id %}" class="btn btn-sm btn-primary">Acheter</a>
+                  {% endif %}             
+                             
+                  <a
+                    href="{% url 'core:car_details' id=car.id %}"
+                    class="btn btn-sm btn-outline-secondary"
+                    >Read More
+                  </a>&nbsp;&nbsp;
+                  <i class="bi bi-people">{{ car.dossier_count }}</i>
+                </div>
+                <small class="text-body-secondary"
+                  >{{ car.since_created }}</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+{% empty %}
+    <div class="">
+        <h1 class="text-danger">
+           Nothing is found please search again !
+        </h1>
+    </div>
+ 
+{% endfor %}

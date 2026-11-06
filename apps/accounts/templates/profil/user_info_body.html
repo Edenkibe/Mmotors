@@ -1,0 +1,81 @@
+{% load static %}
+
+<!-- About Section -->
+<section id="about" class="about section light-background">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>My Profile,{{ user.username }}</h2>
+  </div>
+  <!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4 align-items-center justify-content-center">
+      <div class="col-xl-12" data-aos="fade-up" data-aos-delay="200">
+        <span class="about-meta">MORE ABOUT ME</span>
+        <h2 class="about-title">
+          {% if  user.is_authenticated %}
+              {% if user.is_superuser %}
+                  Hi Admin,{{ user.username }}
+              {% else %}
+                  Hi User, {{ user.username }}, welcome to your profile!
+              {% endif %}
+          {% endif %}
+        </h2>
+        <p class="about-description">
+          Here you can see your profile information, change your password and modify your profile information.
+          team mmotors is always at your disposal to help you in case of any problem.
+        </p>
+
+        <div class="row feature-list-wrapper">
+          <div class="col-md-6">
+            <ul class="feature-list">
+              <li>
+                <i class="bi bi-check-circle-fill"></i> Username: {{ user.username}}
+              </li>
+              <li>
+                <i class="bi bi-check-circle-fill"></i> Email: {{ user.email}}
+              </li>
+             {% if not user.first_name %}
+
+               <li>
+                  <i class="bi bi-x-circle-fill text-danger"></i> Names: None
+                </li>
+                {% else %}
+                
+                 <li>
+                  <i class="bi bi-check-circle-fill"></i> Names: {{ user.first_name }} {{ user.last_name }}
+                </li>
+              {% endif %}
+            
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="feature-list">
+              <li>
+                <i class="bi bi-check-circle-fill"></i> Incididunt ut labore et
+              </li>
+              <li>
+                <i class="bi bi-check-circle-fill"></i> Dolore magna aliqua
+              </li>
+              <li>
+                <i class="bi bi-check-circle-fill"></i> Ut enim ad minim veniam
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="info-wrapper">
+          <div class="row gy-4">
+            <div class="col-lg-6">
+              <a href="{% url 'accounts:change_password' %}" class="btn btn-primary">Change password</a>
+            </div>
+            <div class="col-lg-6">
+              <a href="{% url 'accounts:info_modification' %}" class="btn btn-primary">Modify profile</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /About Section -->

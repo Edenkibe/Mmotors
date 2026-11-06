@@ -1,0 +1,67 @@
+<h4 class="mb-2">
+  {{ total }} {% if total > 1 %} demands found in the
+  system: {% else %} demand found in the system: {% endif %}
+</h4>
+<table class="table table-striped table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Buyer</th>
+      <th scope="col">Type</th>
+      <th scope="col">marque et modele</th>
+      <th scope="col">action</th>
+      <th scope="col">code</th>
+      <th scope="col">status</th>
+      <th scope="col">action</th>
+      <th scope="col">date de creation</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for demande in dossier_user %}
+    <tr>
+      <th scope="row">
+        {% if demande.status == 'encours' %}
+        <span class="position-relative">
+          <i class="bi bi-bell fs-5 text-dark"></i>
+          <span class="translate-middle badge rounded-pill bg-danger">
+            new
+            <span class="visually-hidden">unread messages</span>
+          </span>
+        </span>
+        {% elif demande.status == 'accepté' %}
+        <i class="bi bi-check-circle-fill text-success"></i>
+        {% else %}
+        <i class="bi bi-x-circle-fill text-danger"></i>
+        {% endif %} 
+        {{ demande.client.first_name }} {{ demande.client.last_name}}
+      </th>
+      <td>{{ demande.vehicule.type }}</td>
+      <td>{{ demande.vehicule.marque }}--{{ demande.vehicule.modele }}</td>
+      <td>
+        <a href="{% url 'core:car_details' id=demande.vehicule.id %}"
+          ><u>voir la voiture</u></a
+        >
+      </td>
+      <td>{{ demande.code_location }}</td>
+      <td>
+        {% if demande.status == "en location" %}
+        <i class="bi bi-check-circle-fill text-success"></i>
+        <span class="badge bg-success">location encours</span>
+        {% else %} {{ demande.status }} {% endif %}
+      </td>
+      <td>
+        {% if demande.status == "en location" %}
+        <i class="bi bi-check-circle-fill text-success"></i>
+        <span class="badge bg-success">location encours</span>
+        {% else %}
+        <a href="{% url 'locations:repondre_location' id=demande.id %}"
+          >repondre</a
+        >
+        {% endif %}
+      </td>
+       <td>Le {{ demande.date_creation|date:"d-m-y" }}</td>
+    </tr>
+    {% empty %}
+    <span class="text-danger">No demande found</span>
+    {% endfor %}
+  </tbody>
+</table>

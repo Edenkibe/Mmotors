@@ -1,0 +1,43 @@
+{% for car in results %}
+<tr>
+  <td>
+   {% with main_photo=car.photos.first %} {% if main_photo %}
+      <img
+      src="{{ main_photo.get_picture_url }}"
+      class=""
+      width="50px"
+      height="50px"
+      style="object-fit: cover"
+      />
+      {% endif %} 
+    {% endwith %}
+   
+  </td>
+  <td>{{ car.marque }}--{{ car.modele }}</td>
+  {% if car.type == "Location" %}
+  <td>{{ car.prix }} €/jour</td>
+  {% else %}
+  <td>{{ car.prix }} €</td>
+  {% endif %}
+  <td>{{ car.type }}</td>
+  <td>{{ car.disponibilite }}</td>
+  <td>
+    <a
+      href="{% url 'core:car_details' id=car.id %}"
+      class="btn btn-sm btn-outline-secondary"
+      >Manage this car
+    </a>
+  </td>
+
+  <td>
+    <a href="{% url 'voitures:add_voiture_photo' id=car.id %}" class="d-flex"><i class="bi bi-plus-circle"></i>Ajouter une photo</a>
+  </td>
+  <td>
+    {% if car.has_promotion %}
+    <a href="" class="d-flex"><i class="bi bi-bullseye text-danger"></i>Ads existe</a>
+    {% else %}
+    <a href="{% url 'promotion:create_promotion' id=car.id %}" class="d-flex"><i class="bi bi-bullseye text-success"></i>Créer une pub</a>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}

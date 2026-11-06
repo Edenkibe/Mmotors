@@ -1,0 +1,56 @@
+<!-- Hero Section -->
+{% load static %}
+<section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content" data-aos="fade-up" data-aos-delay="200">
+          <h2>{{ user.first_name }} {{ user.last_name }},</h2>
+        
+          <p>
+            {% if user.is_superuser %}
+              <h5>Role: Admin</h5>
+              {% else %}
+              <span class="text-success"> <strong>Role: User</strong></span> 
+            {% endif %}
+          </p>
+
+          <div class="hero-stats">
+            <div class="stat-item">            
+                <h3>Username: {{ user.username}}</h3>          
+              <p><strong>{{ user.email }}</strong></p>
+            </div>
+            <div class="stat-item">
+              <h3>active: {{ user.is_active }}</h3>
+              <p>
+                {% if user.is_active  %}
+                  <strong>this user is active</strong>
+                  {% else %}
+                  <strong>user not active</strong>
+                {% endif %}
+              </p>
+            </div>            
+          </div>
+          <br>
+          <div class="hero-btns">         
+            <a href="{% url 'core:admin_manage_user' %}" class="btn btn-primary">View all user </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-image" data-aos="zoom-out" data-aos-delay="300">
+          <i class="bi bi-person-badge-fill"></i>
+        </div>
+      </div>
+    </div>
+    <br>
+  </div>
+</section>
+<!-- /Hero Section -->

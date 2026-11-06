@@ -1,0 +1,235 @@
+{% load static %}
+<!-- Portfolio Section -->
+<section id="portfolio" class="portfolio section">
+  <!-- Section Title -->
+  <div class="container">
+	<div class="row">
+        <div class="col-md-">
+    		<h5 style="ont-weight: bolder;">{{ count_cars }} You are searchin for {{ query }} and you got {{ total }} results</h5>
+        </div>
+	</div>
+  <hr>
+</div>
+<br>
+  <!-- End Section Title -->
+
+  <div class="container">
+    <div
+      class="isotope-layout"
+      data-default-filter="*"
+      data-layout="masonry"
+      data-sort="original-order"
+    >
+     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 showCasse">
+        {% for car in results %}
+        <div class="col-lg-4 col-md-6">
+          <div class="card shadow-sm">
+            {% with main_photo=car.photos.first %} {% if main_photo %}
+            <img
+              src="{{ main_photo.get_picture_url }}"
+              class="card-img-top"
+              width="100%"
+              height="270"
+              style="object-fit: cover"
+            />
+            {% endif %} {% endwith %}
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <h6>{{ car.marque }}, <small>{{ car.modele }}</small></h6>
+                <h6>
+                   {{ car.prix }} € 
+                </h6>
+                <small>
+                  <a
+                    href=""
+                    title="More Details"
+                    style="background: red; color: white; padding: 10px"
+                  >
+                    {% if car.type == 'Achat' %}
+                     En vente 
+                    {% endif %}
+                  </a>
+                </small>
+              </div>
+              <div class="d-flex">
+                {% if car.etat == 'New' %}
+                <div>⭐⭐⭐⭐⭐ &nbsp; {{ car.etat }}</div>
+                {% elif car.etat == 'super' %}
+                <div>⭐⭐⭐⭐☆ &nbsp; {{ car.etat }}</div>
+
+                {% else %}
+                <div>⭐⭐⭐☆☆ &nbsp; {{ car.etat }}</div>
+                {% endif %}
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  {% if car.has_achat %}
+                  <a href="{% url 'dossiers:depot_dossier' id=car.id %}" class="btn btn-sm btn-danger">you booked</a>
+                  {% else %}
+                  <a href="{% url 'dossiers:depot_dossier' id=car.id %}" class="btn btn-sm btn-primary">Acheter</a>
+                  {% endif %}             
+                             
+                  <a
+                    href="{% url 'core:car_details' id=car.id %}"
+                    class="btn btn-sm btn-outline-secondary"
+                    >Read More
+                  </a>&nbsp;&nbsp;
+                  <i class="bi bi-people">{{ car.dossier_count }}</i>
+                </div>
+                <small class="text-body-secondary"
+                  >{{ car.since_created }}</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <!-- End Portfolio Container -->
+    </div>
+  </div>
+</section>
+<!-- /Portfolio Section -->
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing section light-background">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Pricing</h2>
+    <p>
+      Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
+      consectetur velit
+    </p>
+  </div>
+  <!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4 justify-content-center">
+      <!-- Basic Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="pricing-card">
+          <h3>Basic Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">9.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium totam.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Duis aute irure dolor
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Excepteur sint occaecat
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Nemo enim ipsam voluptatem
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Standard Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="pricing-card popular">
+          <div class="popular-badge">Most Popular</div>
+          <h3>Standard Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">19.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            At vero eos et accusamus et iusto odio dignissimos ducimus qui
+            blanditiis praesentium voluptatum.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Lorem ipsum dolor sit amet
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Consectetur adipiscing elit
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Sed do eiusmod tempor
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Ut labore et dolore magna
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-light">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="pricing-card">
+          <h3>Premium Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">39.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse
+            quam nihil molestiae.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Temporibus autem quibusdam
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Saepe eveniet ut et voluptates
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Nam libero tempore soluta
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Cumque nihil impedit quo
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Maxime placeat facere possimus
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /Pricing Section -->
+

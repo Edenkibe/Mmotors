@@ -1,0 +1,48 @@
+<!-- Faq Section -->
+<section id="faq" class="faq section">
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="content px-xl-5">
+          
+          <h3><span>{{ demandes.vehicule.marque }}</span> <strong>{{ demandes.vehicule.modele }}</strong>
+            {% if demandes.verification == 'pending...' %}
+                <i class="bi bi-upload text-warning"></i>
+                {% elif demandes.verification == 'accepté' %}
+                <i class="bi bi-check-circle-fill text-success"></i>
+                {% else %}
+                <i class="bi bi-ban-fill text-danger"></i>
+            {% endif %}
+          </h3>
+          <p>
+             {{ demandes.vehicule.description }}
+          </p>
+          <div class="d-flex justify-content-between mb-3">
+             <span class="badge text-bg-success">Price: {{ demandes.vehicule.prix }} Euro</span>
+             <span class="badge text-bg-success">Année: {{ demandes.vehicule.annee }}</span>
+             <span class="badge text-bg-success">Boite: {{ demandes.vehicule.boite }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+             <span class="badge text-bg-success">Carburant: {{ demandes.vehicule.carburant }}s</span>
+             <span class="badge text-bg-success">Etat: {{ demandes.vehicule.etat }}</span>
+             <span class="badge text-bg-success">km: {{ demandes.vehicule.kilometre }} km</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+        <div class="faq-container">
+            <h3 class="mb-2">Repondez a la demande faites par {{ demandes.client.first_name }} {{ demandes.client.last_name }}</h3>
+             <form action="" method="post">
+                  {% csrf_token %}
+                {{ form.verification}} 
+                <br>
+                <button type="submit" class="btn btn-info">Reply</button>
+             </form>
+          <!-- End Faq item-->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /Faq Section -->

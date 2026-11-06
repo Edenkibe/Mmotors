@@ -1,0 +1,95 @@
+<!-- Services Section -->
+<section id="services" class="services section">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>My Profile,{{ user.username }}</h2>
+  </div>
+  <!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row gy-4 justify-content-center">
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <article class="service-item">
+          <span class="service-icon rounded-circle">
+            <i class="bi bi-book"></i>
+          </span>
+          <h3>
+            <a href="{% url 'accounts:user_info' %}"> Mes <span>Informations</span> </a>
+          </h3>
+          <p>
+            Byclicking here you can view your full information,
+            update them and delete what is not important for you
+            this services is delivered by Mmotors team
+          </p>
+          <a
+            href="{% url 'accounts:user_info' %}"
+            class="card-action rounded-circle d-flex align-items-center justify-content-center"
+          >
+            <i class="bi bi-arrow-up-right"></i>
+          </a>
+        </article>
+      </div>
+
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="150">
+        <article class="service-item">
+          <span class="service-icon rounded-circle">
+            <i class="bi bi-gem"></i>
+          </span>
+          <h3>
+            <a href="{% url 'accounts:user_all_request' %}">Mes Demandes 
+              <span class="btn btn-primary position-relative text-light">
+                Achat
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-light">
+                  {{ count_dossier }}
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+              </span>
+            </a>
+          </h3>
+          <p>
+            Fusce aliquet, nibh ac facilisis viverra, nulla purus aliquet diam,
+            quis consectetur risus dolor a diam. Vivamus convallis lacinia
+            magna.
+          </p>
+          <a
+            href="{% url 'accounts:user_all_request' %}"
+            class="card-action rounded-circle d-flex align-items-center justify-content-center"
+          >
+            <i class="bi bi-arrow-up-right"></i>
+          </a>
+        </article>
+      </div>
+
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <article class="service-item">
+          <span class="service-icon rounded-circle">
+            <i class="bi bi-megaphone"></i>
+          </span>
+          <h3>
+            <a href="{% url 'accounts:user_location_request' %}">Mes Demandes 
+              <span class="btn btn-primary position-relative text-light">
+                Location
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-light">
+                  {{ bookings }}
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+              </span>
+            </a>
+          </h3>
+          <p>
+            Aliquam erat volutpat. Integer at sapien at risus elementum ornare a
+            sit amet odio. Mauris quis magna vel enim pretium maximus.
+          </p>
+          <a
+            href="service-details.html"
+            class="card-action rounded-circle d-flex align-items-center justify-content-center"
+          >
+            <i class="bi bi-arrow-up-right"></i>
+          </a>
+        </article>
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- /Services Section -->

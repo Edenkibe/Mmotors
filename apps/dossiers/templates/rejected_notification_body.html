@@ -1,0 +1,56 @@
+<!-- Faq Section -->
+<section id="faq" class="faq section">
+  <div class="container">
+   
+    <div class="row gy-4">
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="content px-xl-5">
+          <h3><span>Your demand </span><strong>is rejected !</strong></h3>
+          <p>
+              This place allows you to get know the raison why 
+              your demand has been rejected to the organization Mmotors
+              the message will be politely adressed to you because we care about 
+              everyone who step up in our grandious entreprise !
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+        <div class="faq-container">
+          <div class="faq-item faq-active">
+            <strong>code du dossier: {{ demande.code_dossier }}</strong>
+            <h3 class="mb-2">
+              <span class="num">{{ demande.vehicule.type }},</span>&nbsp;&nbsp;
+              <span style="font-size: smaller;">Voiture: {{ demande.vehicule.marque }}--{{ demande.vehicule.modele }},</span>&nbsp;&nbsp;
+              <a href="{% url 'core:car_details' id=demande.vehicule.id %}"><u>voir la voiture</u></a>&nbsp;&nbsp;,
+              <span>
+                {% if demande.piece_identite %}
+                    <object data="{{ demande.piece_identite.url }}"
+                            type="application/pdf"
+                            width="100%"
+                            height="600">
+                        <a href="{{ demande.piece_identite.url }}"><i class=" bi bi-download"></i> PDF</a>
+                    </object>
+                {% endif %}
+              </span>&nbsp;&nbsp;&nbsp;
+                
+                <span class="text-danger">
+                      {{ demande.verification }} &nbsp;  <i class="bi bi-ban-fill text-danger"></i>
+                </span>
+               
+            </h3>
+             <span>
+              A lire avec attention: 
+             </span>
+             <p class="alert alert-warning">
+                 {{ demande.message }}
+             </p>
+          </div>
+         
+          <!-- End Faq item-->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /Faq Section -->

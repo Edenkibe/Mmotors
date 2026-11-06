@@ -1,0 +1,98 @@
+{% for demande in contract  %}
+    <div class="faq-item faq-active">
+        <div class="d-flex">
+           <span style="font-weight: bold;">code du dossier: <u>{{ demande.code_location }}</u></span>,&nbsp; &nbsp;
+           <span  style="font-weight: bold;">Du: {{ demande.date_depart|date:"d-m-y" }} au {{ demande.date_retour|date:"d-m-y" }} </span>,&nbsp; &nbsp;
+           <span  style="font-weight: bold;"> {{ demande.days }} jours, {{ demande.total }} € </span>
+        </div>
+            <h3 class="mb-2">
+              <span class="num">{{ demande.vehicule.type }},</span>&nbsp;&nbsp;
+              <span>Voiture: {{ demande.vehicule.marque }}--{{ demande.vehicule.modele }},</span>&nbsp;&nbsp;
+              <a href="{% url 'core:car_details' id=demande.vehicule.id %}"><u>voir la voiture</u></a>&nbsp;&nbsp;,
+                {% if demande.status == 'encours' %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-warning">dossier encours de verification &nbsp;(0 <i class="bi bi-percent">)</i></small>  
+                    </span>             
+                    {% elif demande.status == 'accepté' and demande.mysignature == 'signé' and demande.deal == 'en location' %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-success">Prise par vous &nbsp;(100 <i class="bi bi-percent">)</i></small>  
+                    </span> 
+
+                     {% elif demande.status == 'accepté' and demande.mysignature == 'signé'  %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-success">contrat signé &nbsp;(50 <i class="bi bi-percent">)</i></small>
+                         &nbsp;&nbsp;<a href="{% url 'locations:check_raison_booking' id=demande.id %}"><u>check the raison</u></a>    
+                    </span> 
+                    {% elif demande.status == 'accepté' %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-success">dossier validé&nbsp;(25 <i class="bi bi-percent">)</i></small>  
+                    </span>                   
+                    {% else %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-danger">dossier rejeté &nbsp;(100 <i class="bi bi-percent">)</i></small>  
+                         &nbsp;&nbsp;<a href="{% url 'locations:check_raison_booking' id=demande.id %}"><u>check the raison</u></a>  
+                    </span>
+                {% endif %}
+            </h3> 
+            <!-- bar de progression --> 
+                {% if demande.status == 'encours' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>                 
+                    {% elif demande.status == 'accepté' and demande.deal == 'en location' and demande.mysignature == 'signé' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+
+                     {% elif demande.status == 'rejeté' and demande.mysignature == 'signé' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+                     {% elif demande.status == 'accepté' and demande.mysignature == 'signé' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 50%"></div>
+                    </div>
+                    {% elif demande.status == 'accepté'  %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 25%"></div>
+                    </div> 
+                   
+                    {% else %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                {% endif %} 
+                <br>
+                {% if demande.mysignature == "signé"  %}
+                 <div class="justify-content-between">
+                     {% if demande.status == 'accepté' and demande.mysignature == 'signé' %}
+                     <small class="text-success"><i class="bi bi-check-circle-fill text-success"></i>&nbsp;Contrat signé</small> | &nbsp;&nbsp;
+                     {% endif %}
+                     {% if demande.signed_contract_pdf %}
+                     <object data="{{ demande.signed_contract_pdf.url }}"
+                            type="application/pdf"
+                            width="100%"
+                            height="600">
+                        <a href="{{ demande.signed_contract_pdf.url }}"  class="text-success"><i class=" bi bi-download"></i> Contrat signé PDF</a>
+                    </object> |&nbsp;&nbsp;
+                    {% endif %}
+                    {% if demande.status == 'accepté' and demande.mysignature == 'signé' %}
+                       <a href="{% url 'locations:location_car' id=demande.id %}"><i class="bi bi-cart"></i> Passer a l'achat</a>
+
+                    {% endif %}
+                   
+                 </div>
+
+                {% elif demande.status == "accepté" and demande.mysignature == "not yet" %}
+                <div class="alert alert-warning">
+                     <small>please check you email adress to sign the contract sent by Mmotors using yousign</small>
+                </div>
+                             
+                {% endif %}
+            <!-- bar de progression --> 
+          </div>
+{% empty %}
+    <div class="row">
+          <span class="text-danger">No data fund</span>
+    </div>           
+{% endfor %}

@@ -1,0 +1,138 @@
+<header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+      <a href="{% url 'core:home' %}" class="logo d-flex align-items-center me-auto">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.webp" alt=""> -->
+        <h1 class="sitename"><span>m</span>Motors</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          {% if user.is_authenticated  %}
+            <li><a href="{% url 'voitures:location_car' %}" class="active">Location de voiture</a></li>
+            <li><a href="{% url 'voitures:vente_car' %}">vente de voiture</a></li>
+            {% else %}
+            <li><a href="{% url 'accounts:login' %}" class="active">Location de voiture</a></li>
+            <li><a href="{% url 'accounts:login' %}">vente de voiture</a></li>
+          {% endif %}
+          <li><a href="{% url 'contact:contact_dossier' %}">Contact</a></li>
+          {% if user.is_authenticated %}
+               {% if user.is_superuser %}
+                     <!-- if the user is the admin he will see this -->
+                    <li><a href="{% url 'core:admin_page' %}">Dashboard</a></li>                   
+                     {% if dossier %}
+                     <!-- notification for the admin demande all pending demande achat --> 
+                    <li>
+                        <a href="{% url 'dossiers:all_demandes' %}" class="position-relative" title="achat">                      
+                          <i class="bi bi-bell fs-5"></i>
+                          <span class="translate-middle badge rounded-pill bg-danger">
+                            {{ count }}
+                              <span class="visually-hidden">unread messages</span>
+                          </span>
+                        </a>
+                    </li> 
+                    <!-- notification for the admin demande all pending demande --> 
+                    {% endif %}
+
+                    <!-- all new location encours notification for the admin to approuve them -->
+                     {% if dossier_location %}
+                     <!-- notification for the admin demande all pending demande booking--> 
+                    <li>
+                        <a href="{% url 'locations:get_demande_location' %}" class="position-relative" title="booking">                      
+                          <i class="bi bi-book fs-5"></i>
+                          <span class="translate-middle badge rounded-pill bg-danger">
+                            {{ count_location }}
+                              <span class="visually-hidden">unread messages</span>
+                          </span>
+                        </a>
+                    </li> 
+                    <!-- notification for the admin demande all pending demande --> 
+                    {% endif %}
+                    <!-- notification for the admin demande --> 
+               {% endif %}
+          {% endif %}
+          {% if user.is_authenticated %}
+          <!-- check if the user demande achat has been accepted and he has to sign, send it in notification -->
+            {% if notification %}
+              <li class="dropdown ">
+                <a href="" class="position-relative"> 
+                  <i class="bi bi-bell fs-5"></i>
+                  <span class="translate-middle badge rounded-pill bg-danger">
+                     {{ count_notification }}
+                      <span class="visually-hidden">unread messages</span>
+                  </span>
+                </a>
+                <ul>
+                   {% for notification in notification %}
+                      <li>           
+                          {% if notification.verification == 'accepté' %}
+                            <a href="{% url 'dossiers:dossier_accepted' %}">
+                            <small class="text-success-emphasis">
+                             demande {{ notification.code_dossier }} est {{ notification.verification }}
+                            </small>
+                            </a>
+                            {% else %}
+                            <a href="{% url 'dossiers:rejected_notification' id=notification.id %}">
+                              <small class="text-danger">
+                                Demande {{ notification.code_dossier }} est {{ notification.verification }}
+                              </small>
+                            </a>
+                          {% endif %}                      
+                      </li>
+                   {% endfor %}
+                 
+                </ul>
+              </li>
+            {% endif %}
+          <!-- notification check -->  
+          <!-- #region notification user location-->
+            {% if notification_location %}
+              <li class="dropdown ">
+                <a href="" class="position-relative"> 
+                  <i class="bi bi-bell fs-5"></i>
+                  <span class="translate-middle badge rounded-pill bg-danger">
+                     {{ count_notification_location }}
+                      <span class="visually-hidden">unread messages</span>
+                  </span>
+                </a>
+                <ul>
+                   {% for notification in notification_location %}
+                      <li>           
+                          {% if notification.status == 'accepté' %}
+                            <a href="{% url 'dossiers:dossier_accepted' %}">
+                            <small class="text-success-emphasis">
+                             demande {{ notification.code_location }} est {{ notification.status }}
+                            </small>
+                            </a>
+                            {% else %}
+                            <a href="{% url 'locations:rejected_location' id=notification.id %}">
+                              <small class="text-danger">
+                                Demande {{ notification.code_location }} est {{ notification.status }}
+                              </small>
+                            </a>
+                          {% endif %}                      
+                      </li>
+                   {% endfor %}
+                 
+                </ul>
+              </li>
+            {% endif %}
+            <!-- #region notification user location-->
+          <li class="dropdown "><a href="#"><span>{{ user.username}}</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="{% url 'accounts:user_profil' %}">Profil</a></li>
+              <li></li>
+              <li><a href="#">Dropdown 3</a></li>
+              <li><a  href="{% url 'accounts:logout' %}">Logout</a></li>
+            </ul>
+          </li>
+          {% else %}
+           <a class="btn-getstarted" title="registration" href="{% url 'accounts:registration' %}">Sign up</a>
+          {% endif %}
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+    </div>
+</header>
+ 

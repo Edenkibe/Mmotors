@@ -1,0 +1,14 @@
+{% autoescape off %}
+Hi {{ user.username }},
+
+Welcome to Mmotors, the number one platform for buying and selling used vehicles.
+
+Please click the link below to confirm your registration:
+
+{{ protocol }}://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}
+
+If you did not create this account, you can safely ignore this email.
+
+Thank you,
+The Mmotors Team
+{% endautoescape %}

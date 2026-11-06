@@ -1,0 +1,176 @@
+<!-- Hero Section -->
+{% load static %}
+<section id="hero" class="hero section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-">
+                <h2 style="text-transform: uppercase;font-weight: bolder;">depose ton dossier pour Louer cette voiture</small></h2>
+            </div>
+        </div>
+    <hr>
+    </div>
+    <br>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+     {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% if dossier_exist %}
+        <div class="row align-items-center">
+            <div class="alert alert-warning">
+                <p>{{ count }}
+                    {% if count > 1  %}
+                         persons are  requesting this car
+                         {% else %}
+                         person  requesting this car
+                    {% endif %}
+                     </p>             
+                <h6>Your are already demanding this car please wait until the administration will responde to you and you will see the link to buy</small></h2>         
+            </div>
+            <a href="{% url 'voitures:location_car' %}">View more cars in location</a>
+        </div>
+    {% else %}
+      <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content" data-aos="fade-up" data-aos-delay="200">
+          <h2>{{ voiture.marque }},{{ voiture.modele }}</h2>
+            <p class="text-success">{{ count }}
+                    {% if count > 1  %}
+                          requests on this car
+                         {% else %}
+                          request on this car
+                    {% endif %}
+            </p>       
+          <p>{{ voiture.description }}</p>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              {% if  voiture.type == 'Location' %}
+                <h3>{{ voiture.prix }} € /<small>jour</small> </h3>
+                {% else %}
+                <h3>{{ voiture.prix }} €</h3>
+              {% endif %}
+             
+              <p>Etat: {{ voiture.etat }}</p>
+            </div>
+            <div class="stat-item">
+              <h3>{{ voiture.annee }} <small>annee</small></h3>
+              <p>carburant: {{ voiture.carburant }}</p>
+            </div>
+            <div class="stat-item">
+              <h3>
+                {{ voiture.kilometre }} km
+              </h3>
+              <p>Boite: {{ voiture.boite }}</p>
+            </div>
+          </div>
+
+          <div class="hero-btns">
+            
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+         <div>
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        {{ form.nom_complet.label_tag }}
+                        {{ form.nom_complet}} 
+                        {% if form.nom_complet.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.nom_complet.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        {{ form.telephone.label_tag }}
+                        {{ form.telephone}} 
+                        {% if form.telephone.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.telephone.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        {{ form.email.label_tag }}
+                        {{ form.email}} 
+                        {% if form.email.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.email.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        {{ form.adresse.label_tag }}
+                        {{ form.adresse}} 
+                        {% if form.adresse.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.adresse.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        {{ form.numero_permis.label_tag }}
+                        {{ form.numero_permis}} 
+                        {% if form.numero_permis.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.numero_permis.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        {{ form.pays_delivrance_permis.label_tag }}
+                        {{ form.pays_delivrance_permis}} 
+                        {% if form.pays_delivrance_permis.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.pays_delivrance_permis.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        {{ form.date_depart.label_tag }}
+                        {{ form.date_depart}} 
+                        {% if form.date_depart.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.date_depart.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        {{ form.date_retour.label_tag }}
+                        {{ form.date_retour}} 
+                        {% if form.date_retour.errors %}
+                            <div id="emailHelp" class="text-danger">{{ form.date_retour.errors.0 }}</div>                                  
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-12 form-group mb-3">
+                    {{ form.lieu_depart.label_tag }}
+                     {{ form.lieu_depart }}
+
+                        {% if form.lieu_depart.errors %}
+                            <div class="text-danger">
+                                {{ form.lieu_depart.errors.0 }}
+                            </div>
+                        {% endif %}
+                </div>
+                <div class="col-lg-12 form-group mb-3">
+                    {{ form.lieu_retour.label_tag }}
+                     {{ form.lieu_retour }}
+
+                        {% if form.lieu_retour.errors %}
+                            <div class="text-danger">
+                                {{ form.lieu_retour.errors.0 }}
+                            </div>
+                        {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+         </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    <br>
+    
+  </div>
+</section>
+<!-- /Hero Section -->

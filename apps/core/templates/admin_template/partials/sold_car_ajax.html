@@ -1,0 +1,72 @@
+<h4 class="mb-2">
+  {{ total }} {% if total > 1 %} cars deja vendu in the
+  system: {% else %} car vendu in the system: {% endif %}
+</h4>
+<table class="table table-striped table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Acheté par</th>
+      <th scope="col">piece identité</th>
+      <th scope="col">marque et modele</th>
+      <th scope="col">Type</th>
+      <th scope="col">jour de payement</th>
+      <th scope="col">invoice</th>
+      <th scope="col">voir la voiture</th>
+      <th scope="col">code</th>
+      <th scope="col">status</th>
+    </tr>
+  </thead>
+  <tbody class="showtable">
+    {% for demande in sold_car %}
+    <tr>
+      <th scope="row">
+        <i class="bi bi-check-circle-fill text-success"></i>
+        {{ demande.client.first_name }} {{ demande.client.last_name }}
+      </th>
+      <td>
+        {% if demande.piece_identite %}
+        <object
+          data="{{ demande.piece_identite.url }}"
+          type="application/pdf"
+          width="100%"
+          height="600"
+        >
+          <a href="{{ demande.piece_identite.url }}"
+            ><i class="bi bi-download"></i> PDF</a
+          >
+        </object>
+        {% endif %}
+      </td>
+      <td>{{ demande.vehicule.marque }}--{{ demande.vehicule.modele }}</td>
+      <td>{{ demande.vehicule.type }}</td>
+      <td>{{ demande.paid_at|date:"d-m-Y" }}</td>
+      <td>
+        {% if demande.facture_pdf %}
+        <object
+          data="{{ demande.facture_pdf.url }}"
+          type="application/pdf"
+          width="100%"
+          height="600"
+        >
+          <a href="{{ demande.facture_pdf.url }}"
+            ><i class="bi bi-download"></i> PDF</a
+          >
+        </object>
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url 'core:car_details' id=demande.vehicule.id %}"
+          ><u>voir la voiture</u></a
+        >
+      </td>
+      <td>{{ demande.code_dossier }}</td>
+
+      <td>
+        <i class="bi bi-check-circle-fill text-success"></i> {{ demande.deal }}
+      </td>
+    </tr>
+    {% empty %}
+    <span class="text-danger">you have not yet sold a car</span>
+    {% endfor %}
+  </tbody>
+</table>

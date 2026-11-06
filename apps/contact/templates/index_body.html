@@ -1,0 +1,108 @@
+<section id="contact" class="contact section light-background">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Contact</h2>
+  </div>
+  <!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4 g-lg-5">
+      <div class="col-lg-5">
+        <div class="info-box" data-aos="fade-up" data-aos-delay="200">
+          <h3>Contact Info</h3>
+          <p>
+            Praesent sapien massa, convallis a pellentesque nec, egestas non
+            nisi. Vestibulum ante ipsum primis.
+          </p>
+
+          <div class="info-item" data-aos="fade-up" data-aos-delay="300">
+            <div class="icon-box">
+              <i class="bi bi-geo-alt"></i>
+            </div>
+            <div class="content">
+              <h4>Notre location</h4>
+              <p>22 rue paul</p>
+              <p>Lyon,69000</p>
+            </div>
+          </div>
+
+          <div class="info-item" data-aos="fade-up" data-aos-delay="400">
+            <div class="icon-box">
+              <i class="bi bi-telephone"></i>
+            </div>
+            <div class="content">
+              <h4>Phone Number</h4>
+              <p>+33 639659865</p>
+              <p>+33 759698546</p>
+            </div>
+          </div>
+
+          <div class="info-item" data-aos="fade-up" data-aos-delay="500">
+            <div class="icon-box">
+              <i class="bi bi-envelope"></i>
+            </div>
+            <div class="content">
+              <h4>Email Address</h4>
+              <p>mmotors@gmail.com</p>
+              <p>contact@info.fr</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-7">
+        <div class="contact-form" data-aos="fade-up" data-aos-delay="300">
+          <h3>Get In Touch</h3>
+          <p>
+            Praesent sapien massa, convallis a pellentesque nec, egestas non
+            nisi. Vestibulum ante ipsum primis.
+          </p>
+
+          <form
+            action=""
+            method="post"
+            data-aos="fade-up"
+            data-aos-delay="200" 
+          >
+          {% csrf_token %}
+            <div class="row gy-4">
+              <div class="col-md-6">
+                {{ form.nom }} {% if form.nom.errors %}
+                  <div class="error text-danger">{{ form.nom.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                 {{ form.email }} {% if form.email.errors %}
+                  <div class="error text-danger">{{ form.email.errors.0 }}</div>
+                {% endif %}
+              </div>
+          
+              <div class="col-md-6">
+                 {{ form.code_dossier }} {% if form.code_dossier.errors %}
+                  <div class="error text-danger">{{ form.code_dossier.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                 {{ form.type }} {% if form.type.errors %}
+                  <div class="error text-danger">{{ form.type.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-12">
+                    {{ form.message }} {% if form.message.errors %}
+                    <div class="error text-danger">{{ form.message.errors.0 }}</div>
+                    {% endif %}
+              </div>
+
+              <div class="col-12 text-center">
+                <button type="submit" class="btn">Send Message</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,66 @@
+<h2 class="mb-2">Over
+  
+        {% if total > 1 %}
+          users found in the system:
+          {% else %}
+          user found in the system:
+        {% endif %}       
+</h2>
+<table class="table table-striped table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">username</th>
+      <th scope="col">email</th>
+      <th scope="col">visibility</th>
+      <th scope="col">Role</th>
+      <th scope="col">actions</th>
+    </tr>
+  </thead>
+  <tbody class="showtable">
+    {% for user in users %}
+    <tr>
+      <th scope="row">
+        {% if user.first_name or user.last_name %} 
+        {{ user.first_name }} {{ user.last_name }} 
+        {% else %} Unknouwn 
+        {% endif %}
+      </th>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>
+        {% if user.is_active %}
+        <span class="text-success">user is active</span>
+
+        {% else %}
+        <span class="text-danger">User is not active</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if user.is_superuser %}
+        <span class="text-success">Admin</span>
+
+        {% else %}
+        <span class="text-success">User</span>
+        {% endif %}
+      </td>
+      <td class="d-flex">
+        <a
+          href="{% url 'core:block_unblock_user' id=user.id %}"
+          class="bloquer_unblock_user"
+        >
+          {% if user.is_active %}
+          <span class="show_stat text-danger">Block this user ?</span>
+          {% else %}
+          <span class="show_stat">Activate this user ?</span>
+          {% endif %}
+        </a>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="{% url 'core:delete_user' id=user.id %}">delete this user</a>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="{% url 'core:view_user' id=user.id %}">voir user</a>
+      </td>
+    </tr>
+    {% empty %} No user found {% endfor %}
+  </tbody>
+</table>

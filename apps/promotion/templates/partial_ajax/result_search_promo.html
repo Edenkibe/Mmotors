@@ -1,0 +1,83 @@
+<h2 class="mb-2">
+  {{ total }} {% if total > 1 %} users found in the system: {% else %} ads
+  found in the system: {% endif %}
+</h2>
+<table class="table table-striped table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Photo</th>
+      <th scope="col">Marque</th>
+      <th scope="col">Modele</th>
+      <th scope="col">Etat</th>
+      <th scope="col">status</th>
+      <th scope="col">action</th>
+      <th scope="col">voir</th>
+      <th scope="col">update</th>
+    </tr>
+  </thead>
+  <tbody class="showtable">
+    {% for promo in results %}
+    <tr>
+      <th scope="row">
+        {% with photo=promo.voiture.photos.first %} {% if photo %}
+        <img
+          src="{{ photo.get_picture_url }}"
+          style="
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+          "
+        />
+        {% endif %} {% endwith %}
+      </th>
+      <td>{{ promo.voiture.marque }}</td>
+      <td>{{ promo.voiture.modele }}</td>
+      <td>
+        {% if promo.disponibilite == 'disponible' %}
+        <span class="text-warning">pending...</span>
+        {% elif promo.disponibilite == 'commencé' %}
+        <span class="text-success">pub encours...</span>
+        {% elif promo.disponibilite == 'Bloqué' %}
+        <span class="text-warning">Bloqué</span>
+        {% else %}
+        <span class="text-danger">terminé</span>
+        {% endif %}
+      </td>
+      <td>
+        <a
+          href="{% url 'promotion:bloque_unbloque' id=promo.id %}"
+          class="bloquer_pub"
+        >
+          {% if promo.disponibilite == 'Bloqué' %}
+          <span class="show_pub text-warning">cette pub est suspendue</span>
+          {% elif promo.disponibilite == 'commencé' %}
+          <span class="show_pub">bloqué cette pub</span>
+          {% elif promo.disponibilite == 'disponible' %}
+          <span class="show_pub">bloqué cette pub</span>
+          {% else %}
+          <span class="show_pub">Terminé,mais bloqué là</span>
+          {% endif %}
+        </a>
+      </td>
+      <td>
+        <a href="{% url 'promotion:delete_ads' id=promo.id %}"
+          >delete cette pub</a
+        >
+      </td>
+      <td>
+        <a href="{% url 'core:car_details' id=promo.voiture.id %}"
+          >voir cette voiture</a
+        >
+      </td>
+      <td>
+        <a href="{% url 'promotion:modifier_pub' id=promo.id %}"
+          >Modifier cette pub</a
+        >
+      </td>
+    </tr>
+    {% empty %}
+    <span class="text-danger">No ads founds in the database</span>
+    {% endfor %}
+  </tbody>
+</table>

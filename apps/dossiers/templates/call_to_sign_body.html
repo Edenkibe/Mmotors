@@ -1,0 +1,74 @@
+{% if notification %}
+<section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row align-items-center">
+      <!-- search seaction -->
+      <div class="col-lg-12">
+            <div class="card text-center">
+                <div class="card-header">
+                   <h5 class="text-success">You have a contract to sign!</h5>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-check-circle-fill text-success"></i></h5>
+                    <p class="card-text">Please check you adress mail and sign the Buying contract sent by yousign,
+                      sign it to turn off the notification count
+                    </p>
+                    <a href="{% url 'accounts:user_profil' %}" class="btn btn-primary">Go to my profil</a>
+                </div>
+                <div class="card-footer text-body-secondary">
+                    support by yousign
+                </div>
+            </div>            
+      </div>     
+    </div>
+  </div>
+</section>
+{% elif notification_location  %}
+<section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row align-items-center">
+      <!-- search seaction -->
+      <div class="col-lg-12">
+            <div class="card text-center">
+                <div class="card-header">
+                   <h5 class="text-success">You have a contract to sign!</h5>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-check-circle-fill text-success"></i></h5>
+                    <p class="card-text">Please check you adress mail and sign the booking contract sent by yousign,
+                      sign it to turn off the notification count
+                    </p>
+                    <a href="{% url 'accounts:user_profil' %}" class="btn btn-primary">Go to my profil</a>
+                </div>
+                <div class="card-footer text-body-secondary">
+                    support by yousign
+                </div>
+            </div>            
+      </div>     
+    </div>
+  </div>
+</section>
+{% else %}
+<section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row align-items-center">
+      <!-- search seaction -->
+      <div class="col-lg-12">
+            <div class="card text-center">
+                <div class="card-header">
+                    Contract
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">You have no contract to sign!</h5>
+                    <p class="card-text">Sorry you have no contract to sign for now</p>
+                    <a href="{% url 'accounts:user_profil' %}" class="btn btn-primary">Go to my profil</a>
+                </div>
+                <div class="card-footer text-body-secondary">
+                    support by yousign
+                </div>
+            </div>            
+      </div>     
+    </div>
+  </div>
+</section>
+{% endif %}

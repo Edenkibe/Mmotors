@@ -1,0 +1,59 @@
+ {% if  total < 1 %}
+                <h2 class="mb-2 text-danger">
+                    Aucune voiture n'a été achetée pour le moment
+                </h2>
+                {% elif total > 1 %}
+                <h2 class="mb-2">
+                        {{ total }} voitures ont été achetées pour le moment
+                </h2>
+                    {% else %}
+                <h2 class="mb-2">
+                        {{ total }} voiture a été achetée pour le moment  
+                </h2> 
+                {% endif %}    
+<div class="table-responsive small">
+                <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                    <th scope="col">Marque & modele</th>
+                    <th scope="col">prix</th>
+                    <th scope="col">Acheteur</th>
+                    <th scope="col">Numéro de dossier</th>                    
+                    <th scope="col">contact client now</th>
+                    <th scope="col">dossier status</th> 
+                    <th scope="col">acheté il y a</th>          
+                    </tr>
+                </thead>
+                <tbody>
+                    {% load humanize %}
+                    {% for car in action %}
+                    <tr>
+                    <td>{{ car.marque }}--{{ car.modele }}</td>              
+                    <td>{{ car.prix|floatformat:2|intcomma}} €</td>          
+                    
+                    <td>{{ car.client.first_name }} {{ car.client.last_name }}</td>
+                     <td>{{ car.code_dossier }}</td>
+                    <td>
+                        <a
+                            href="{% url 'core:contact_client' id=car.id %}"
+                            class="btn btn-sm btn-outline-secondary"
+                            >contact client</a
+                        </a>
+                    </td>
+                      {% if car.read == "non lu" %}
+                      <td>
+                         <i class="bi bi-x text-danger"></i> client no contacted yet
+                      </td>                     
+                      {% else %}
+                      <td>
+                          <i class="bi bi-check-circle-fill text-success"></i> client contacted
+                      </td>                     
+                      {% endif %}
+                    <td>{{ car.paid_at|naturaltime }}</td>
+                    </tr>
+                    {% empty %}
+                        No cars found in
+                    {% endfor %}
+                </tbody>
+                </table>
+</div>

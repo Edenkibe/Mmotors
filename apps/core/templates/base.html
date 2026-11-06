@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% include "head.html" %}
+
+<body class="index-page">
+
+  {% include "nav.html" %}
+
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "footer.html" %}
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <!-- <div id="preloader"></div> -->
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'js/main.js' %}"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+   
+   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+     <script src="{% static 'js/custom.js' %}"></script>
+  #custom js and ajax
+  <script>
+    //here ici change la disponibilite de la voiture en visible ou invisible
+    $(document).on('click', '.dispo_car', function(event){ 
+    event.preventDefault();
+
+    const button = event.currentTarget;           // le bouton cliqué
+    const url = this.href;                      // URL du contenu
+    
+    const show_dispo = button.querySelector('span.disponibilite'); // class pour show le resultat
+    
+    axios.get(url)
+        .then(response => {
+            // Mise à jour the type
+            show_dispo.textContent =response.data.button_text;
+        })
+        .catch(error => {
+            if(error.response && error.response.status === 403){
+                window.alert("Connecte-toi avant de changer la disponibilite !");
+            } else {
+                console.error("Une erreur est survenue :", error);
+            }
+        });
+    });
+    
+    
+    //la recherche de voiture sur la barre 
+    $(function () {
+    $('.lookover').on('keyup', function () {
+      
+        let query = $(this).val().trim();
+        let url = $(this).data('url');
+
+        //si la barre est vide on retourne tout 
+        if (query.length === 0 || query.length >= 2) {
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {
+                    q: query
+                },
+                success: function (data) {
+                    $('.showCasse').html(data);
+                    $('.errrorgoeshere').html('');
+                }
+            });
+
+        } 
+        else {
+
+            $('.errorhere').html(
+                '<small class="text-danger">Please enter at least 2 characters to see result</small>'
+            );
+        }
+
+    });
+    });
+
+
+     //la recherche de ads pour admin 
+    $(function () {
+    $('.ads_search').on('keyup', function () {
+      
+        let query = $(this).val().trim();
+        let url = $(this).data('url');
+
+        //si la barre est vide on retourne tout 
+        if (query.length === 0 || query.length >= 2) {
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {
+                    q: query
+                },
+                success: function (data) {
+                    $('.show_result_pub').html(data);
+                    $('.errrorgoeshere').html('');
+                }
+            });
+
+        } 
+        else {
+
+            $('.error_me').html(
+                '<small class="text-danger">Please enter at least 2 characters to see result</small>'
+            );
+        }
+
+    });
+    });
+
+    // here the user search his booking by it code unique: 
+    $(function () {
+        $('.search-unique').on('keyup', function () {
+        
+            let query = $(this).val().trim();
+            let url = $(this).data('url');
+        
+            //si la barre est vide on retourne tout 
+            if (query.length === 0 || query.length >= 2) {
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        q: query
+                    },
+                    success: function (data) {
+                        $('.unique').html(data);
+                        $('.errorhere').html('');
+                    }
+                });
+
+            } 
+            else {
+
+                $('.errorhere').html(
+                    '<small class="text-danger">Please enter at least 2 characters to see result</small>'
+                );
+            }
+
+        });
+    });
+
+    // here the user search his achat by it code unique: 
+    $(function () {
+        $('.search-achat').on('keyup', function () {
+        
+            let query = $(this).val().trim();
+            let url = $(this).data('url');
+        
+            //si la barre est vide on retourne tout 
+            if (query.length === 0 || query.length >= 2) {
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        q: query
+                    },
+                    success: function (data) {
+                        $('.collection').html(data);
+                        $('.errorhere').html('');
+                    }
+                });
+
+            } 
+            else {
+
+                $('.errorhere').html(
+                    '<small class="text-danger">Please enter at least 2 characters to see result</small>'
+                );
+            }
+
+        });
+    });
+
+  </script>
+
+</body>
+
+</html>

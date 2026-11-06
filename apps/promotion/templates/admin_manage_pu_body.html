@@ -1,0 +1,254 @@
+{% load static %}
+<!-- Portfolio Section -->
+<section id="portfolio" class="portfolio section">
+  <!-- Section Title -->
+  <div class="container">
+    <div class="row">
+      <!-- #region error here-->
+      <div class="col-md-">
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+        <h2>Search your advert here buddies...</h2>
+        <p>
+          our search bar is intelligent to understand your needs,Find the
+          perfect ads by typing these key words: disponible for ads pending..., commencé for ads running,promotion done for ads done, bloqué for ads bloqued or you can type the title of your ads 
+          etc..
+        </p>
+        <div id="custom-search-input">
+          <form
+            action="{% url 'promotion:admin_search_ads' %}"
+            method="get"
+            class="form-group"
+          >
+            <div class="input-group col-md-12">
+              <input
+                class="form-control input-lg ads_search"
+                type="search"
+                name="q"
+                placeholder="Search"
+                data-url="{% url 'promotion:admin_search_ads' %}"
+              />
+            </div>
+          </form>
+        </div>
+        <small class="error_me"></small>
+      </div>
+    </div>
+  </div>
+  <br />
+  <!-- End Section Title -->
+
+  <div class="container">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 show_result_pub">
+      <!-- #region table here -->
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Photo</th>
+            <th scope="col">Marque</th>
+            <th scope="col">Modele</th>
+            <th scope="col">Etat</th>
+            <th scope="col">actions</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            {% for promo in promo %}
+            <tr>
+                <th scope="row">
+                   {% with photo=promo.voiture.photos.first %}
+                        {% if photo %}
+                            <img src="{{ photo.get_picture_url }}"
+                                style="width:50px;height:50px;object-fit:cover;border: 2px solid rgba(255,255,255,0.5);">
+                        {% endif %}
+                   {% endwith %}
+          
+                </th>
+                <td>{{ promo.voiture.marque }}</td>
+                <td>{{ promo.voiture.modele }}</td>
+                <td>
+                    {% if promo.disponibilite == 'disponible'  %} 
+                    <span class="text-warning">pending...</span>
+                    {% elif promo.disponibilite == 'commencé' %}
+                    <span class="text-success">pub encours...</span>
+                    {% elif promo.disponibilite == 'Bloqué' %}
+                    <span class="text-warning">Bloqué</span>
+                    {% else %}
+                    <span class="text-danger">terminé</span>
+                    {% endif %}
+                </td>
+                <td class="d-flex">                                      
+                    <a href="{% url 'promotion:bloque_unbloque' id=promo.id %}"class="bloquer_pub">
+                       {% if promo.disponibilite == 'Bloqué'  %}
+                          <span class="show_pub text-warning">cette pub est suspendue</span>
+                       {% elif promo.disponibilite == 'commencé' %}
+                          <span class="show_pub">bloqué cette pub</span> 
+                       {% elif promo.disponibilite == 'disponible' %}
+                          <span class="show_pub">bloqué cette pub</span>
+                       {% else %}
+                          <span class="show_pub">Terminé,mais bloqué là</span>
+                       {% endif %}
+                    </a>               
+                     &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href="{% url 'promotion:delete_ads' id=promo.id %}">delete cette pub</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href="{% url 'core:car_details' id=promo.voiture.id %}">voir cette voiture</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a href="{% url 'promotion:modifier_pub' id=promo.id %}">Modifier cette pub</a>
+                </td>
+            </tr>
+            {% empty %}
+             <span class="text-danger">No ads founds in the database</span>
+           {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- End Portfolio Container -->
+  </div>
+</section>
+<!-- /Portfolio Section -->
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing section light-background">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Pricing</h2>
+    <p>
+      Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
+      consectetur velit
+    </p>
+  </div>
+  <!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4 justify-content-center">
+      <!-- Basic Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="pricing-card">
+          <h3>Basic Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">9.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium totam.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Duis aute irure dolor
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Excepteur sint occaecat
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Nemo enim ipsam voluptatem
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Standard Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="pricing-card popular">
+          <div class="popular-badge">Most Popular</div>
+          <h3>Standard Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">19.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            At vero eos et accusamus et iusto odio dignissimos ducimus qui
+            blanditiis praesentium voluptatum.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Lorem ipsum dolor sit amet
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Consectetur adipiscing elit
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Sed do eiusmod tempor
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Ut labore et dolore magna
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-light">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="pricing-card">
+          <h3>Premium Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">39.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse
+            quam nihil molestiae.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Temporibus autem quibusdam
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Saepe eveniet ut et voluptates
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Nam libero tempore soluta
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Cumque nihil impedit quo
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Maxime placeat facere possimus
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /Pricing Section -->

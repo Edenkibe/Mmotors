@@ -1,0 +1,481 @@
+{% load static %}
+<!-- Portfolio Section -->
+<section id="portfolio" class="portfolio section">
+  <!-- Section Title -->
+  <div class="container">
+	<div class="row">
+        <div class="col-md-">
+    		<h2>Search your vehicle</h2>
+            <p>our search bar is intelligent to understand your needs,Find the perfect vehicle for your needs by typing the name,kilometer,price etc..</p>
+            <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    <input type="text" class="form-control input-lg" placeholder="Buscar" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+<br>
+  <!-- End Section Title -->
+
+  <div class="container">
+    <div
+      class="isotope-layout"
+      data-default-filter="*"
+      data-layout="masonry"
+      data-sort="original-order"
+    >
+      <ul
+        class="portfolio-filters isotope-filters"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
+        <li data-filter="*">Mercedes</li>
+        <li data-filter=".filter-app">Polo</li>
+        <li data-filter=".filter-product">Peugeot</li>
+        <li data-filter=".filter-branding">Bmw</li>
+        <li data-filter=".filter-books">Vw</li>
+        <li data-filter=".filter-books">Man</li>
+      </ul>
+      <!-- End Portfolio Filters -->
+
+      <div
+        class="row gy-4 isotope-container"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-1.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-1.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details">App 1</a>
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div
+          class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product"
+        >
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-10.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-10.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Product 1</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div
+          class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding"
+        >
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-7.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-7.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Branding 1</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-4.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-4.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Books 1</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-2.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-2.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details">App 2</a>
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div
+          class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product"
+        >
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-11.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-11.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Product 2</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div
+          class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding"
+        >
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-8.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-8.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Branding 2</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-5.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-5.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Books 2</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-3.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-3.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details">App 3</a>
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div
+          class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product"
+        >
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-12.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-12.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Product 3</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div
+          class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding"
+        >
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-9.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-9.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Branding 3</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+
+        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
+          <div class="portfolio-content h-100">
+            <a
+              href="{% static 'img/portfolio/portfolio-6.webp' %}"
+              data-gallery="portfolio-gallery-app"
+              class="glightbox"
+              ><img
+                src="{% static 'img/portfolio/portfolio-6.webp' %}"
+                class="img-fluid"
+                alt=""
+            /></a>
+            <div class="portfolio-info">
+              <h4>
+                <a href="portfolio-details.html" title="More Details"
+                  >Books 3</a
+                >
+              </h4>
+              <p>Lorem ipsum, dolor sit amet consectetur</p>
+            </div>
+          </div>
+        </div>
+        <!-- End Portfolio Item -->
+      </div>
+      <!-- End Portfolio Container -->
+    </div>
+  </div>
+</section>
+<!-- /Portfolio Section -->
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing section light-background">
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Pricing</h2>
+    <p>
+      Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
+      consectetur velit
+    </p>
+  </div>
+  <!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4 justify-content-center">
+      <!-- Basic Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="pricing-card">
+          <h3>Basic Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">9.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium totam.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Duis aute irure dolor
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Excepteur sint occaecat
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Nemo enim ipsam voluptatem
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Standard Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="pricing-card popular">
+          <div class="popular-badge">Most Popular</div>
+          <h3>Standard Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">19.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            At vero eos et accusamus et iusto odio dignissimos ducimus qui
+            blanditiis praesentium voluptatum.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Lorem ipsum dolor sit amet
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Consectetur adipiscing elit
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Sed do eiusmod tempor
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Ut labore et dolore magna
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-light">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="pricing-card">
+          <h3>Premium Plan</h3>
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">39.9</span>
+            <span class="period">/ month</span>
+          </div>
+          <p class="description">
+            Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse
+            quam nihil molestiae.
+          </p>
+
+          <h4>Featured Included:</h4>
+          <ul class="features-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Temporibus autem quibusdam
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Saepe eveniet ut et voluptates
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Nam libero tempore soluta
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Cumque nihil impedit quo
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              Maxime placeat facere possimus
+            </li>
+          </ul>
+
+          <a href="#" class="btn btn-primary">
+            Buy Now
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /Pricing Section -->
+

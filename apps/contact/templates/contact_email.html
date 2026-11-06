@@ -1,0 +1,24 @@
+{% autoescape off %}
+<h3>Nouveau message concernant un dossier {{ contact.type }}</h3>
+
+<p>
+<strong>Nom:</strong> {{ contact.nom }}
+</p>
+
+<p>
+<strong>Email:</strong> {{ contact.email }}
+</p>
+
+<p>
+<strong>Code dossier:</strong> {{ contact.code_dossier }} -- {{ contact.type }}
+</p>
+
+<p>
+<strong>Message:</strong>
+</p>
+
+<p>
+{{ contact.message }}
+</p>
+
+{% endautoescape %}

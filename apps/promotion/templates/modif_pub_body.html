@@ -1,0 +1,70 @@
+<!-- Hero Section -->
+{% load static %}
+<section id="hero" class="hero section">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content" data-aos="fade-up" data-aos-delay="200">
+          <h2>Modifier cette publicité</h2>
+          {% if promo %}
+          <small>{{ promo.voiture.marque }},{{ promo.voiture.modele }}</small>
+          {% endif %}
+          <!-- #here the form to edit the car  -->
+            <form method="post"> 
+                 {% csrf_token %}
+                 <div class="col-md-12">
+                        <label for="{{ form.titre.id_for_label }}" class="form-label">Titre</label> {{ form.titre }} 
+                        {% if form.titre.errors %}
+                        <div class="text-danger">{{ form.titre.errors.0 }}</div>
+                        {% endif %}
+                 </div> 
+                 <div class="col-md-12">
+                        <label for="{{ form.disponibilite.id_for_label }}" class="form-label">Disponibilite</label> {{ form.disponibilite }} 
+                        {% if form.disponibilite.errors %}
+                        <div class="text-danger">{{ form.disponibilite.errors.0 }}</div>
+                        {% endif %}
+                 </div> 
+                 <div class="row mb-4">
+                     <div class="col-md-6">
+                        <label for="{{ form.start_date.id_for_label }}" class="form-label">start_date</label> {{ form.start_date }}
+                        {% if form.start_date.errors %}
+                        <div class="text-danger">{{ form.start_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+            
+                    <div class="col-md-6">
+                        <label for="{{ form.end_date.id_for_label }}" class="form-label">end_date</label> {{ form.end_date }}
+                         {% if form.end_date.errors %}
+                        <div class="text-danger">{{ form.end_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+                <div class="col-md-12">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Titre</label> {{ form.description }} 
+                        {% if form.description.errors %}
+                        <div class="text-danger">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                </div>
+                <br>        
+                <button type="submit" class="btn btn-primary">Create promotion</button>
+            </form>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-image" data-aos="zoom-out" data-aos-delay="300">
+            {% with photo=promo.voiture.photos.first %}
+                {% if photo %}
+                    <img src="{{ photo.get_picture_url }}" alt="{{ promo.voiture.modele }}" style="height: 390px;object-fit: cover;">
+                {% else %}
+                    <p>No main photo available.</p>
+                {% endif %}
+            {% endwith %}
+        </div>
+      </div>
+    </div>
+    <br>
+     
+  </div>
+</section>
+<!-- /Hero Section -->

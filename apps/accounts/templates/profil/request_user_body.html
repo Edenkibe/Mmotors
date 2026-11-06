@@ -1,0 +1,152 @@
+<!-- Faq Section -->
+<section id="faq" class="faq section">
+  <div class="container">
+   
+    <div class="row gy-4">
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="content px-xl-5">
+          <h3><span>My requests </span><strong>In order</strong></h3>
+          <p>
+            This place allows you to follow up all the progression 
+            of your demands in Achat mode, please make sure to click on 
+            a decision to see the raison of your demand has been accepted 
+            or rejected
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+        <div class="container-fluid mb-4">
+             <form method="get" action="{% url 'locations:user_search_achat' %}" class="d-flex" role="search">
+              <input
+                  class="form-control me-2 search-achat"
+                  type="search"                       
+                  name="q"
+                  placeholder="search by the code ex: AQSD18D8LOKD"
+                  data-url="{% url 'locations:user_search_achat' %}"
+              >
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            <small class="errorhere"></small>
+          </div>
+        <div class="faq-container collection">
+          {% for demande in contract  %}
+          <div class="faq-item faq-active">
+            <strong>code du dossier: {{ demande.code_dossier }}</strong>
+            <h3 class="mb-2">
+              <span class="num">{{ demande.vehicule.type }},</span>&nbsp;&nbsp;
+              <span style="font-size: smaller;">Voiture: {{ demande.vehicule.marque }}--{{ demande.vehicule.modele }},</span>&nbsp;&nbsp;
+              <a href="{% url 'core:car_details' id=demande.vehicule.id %}"><u>voir la voiture</u></a>&nbsp;&nbsp;,
+              <span>
+                {% if demande.piece_identite %}
+                    <object data="{{ demande.piece_identite.url }}"
+                            type="application/pdf"
+                            width="100%"
+                            height="600">
+                        <a href="{{ demande.piece_identite.url }}"><i class=" bi bi-download"></i> PDF</a>
+                    </object>
+                {% endif %}
+              </span>&nbsp;&nbsp;&nbsp;
+                {% if demande.verification == 'pending...' %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-warning">progression.. &nbsp;(0 <i class="bi bi-percent">)</i></small>  
+                    </span>             
+                    {% elif demande.verification == 'accepté' and demande.mysignature == 'signé' and demande.deal == 'acheté' %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-success">acheté par vous &nbsp;(100 <i class="bi bi-percent">)</i></small>  
+                    </span> 
+                     {% elif demande.verification == 'accepté' and demande.mysignature == 'signé' %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-success">contrat signé &nbsp;(50 <i class="bi bi-percent">)</i></small>
+                         &nbsp;&nbsp;<a href="{% url 'dossiers:check_raison' id=demande.id %}"><u>check the raison</u></a>  
+                    </span> 
+                    {% elif demande.verification == 'accepté' %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-success">dossier validé&nbsp;(25 <i class="bi bi-percent">)</i></small>  
+                         
+                    </span>                   
+                    {% else %}
+                    <span>
+                         <small style="font-size: smaller;" class="text-danger"> <i class="bi bi-x-circle-fill text-danger"></i> dossier rejeté &nbsp;(100 <i class="bi bi-percent">)</i>
+                          &nbsp;&nbsp;<a href="{% url 'dossiers:check_raison' id=demande.id %}"><u>check the raison</u></a>
+                        </small>  
+                    </span>
+                    
+                {% endif %}
+            </h3> 
+            <!-- bar de progression --> 
+                {% if demande.verification == 'pending...' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>                 
+                    {% elif demande.verification == 'accepté' and demande.mysignature == 'signé' and demande.deal == 'acheté' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+                     {% elif demande.verification == 'rejeté' and demande.mysignature == 'signé' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div> 
+                     {% elif demande.verification == 'accepté' and demande.mysignature == 'signé' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 50%"></div>
+                    </div>
+                    {% elif demande.verification == 'accepté' %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 25%"></div>
+                    </div> 
+                   
+                    {% else %}
+                    <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                {% endif %} 
+                <br>
+                {% if demande.verification == "accepté"  and demande.mysignature == "signé"  %}
+                 <div class="justify-content-between">
+                      {% if demande.verification == 'accepté' %}
+                       <small class="text-success"><i class="bi bi-check-circle-fill text-success"></i>&nbsp;Contrat signé</small> | &nbsp;&nbsp;
+                       {% else %} <small class="text-danger"><i class="bi bi-ban-fill text-danger"></i>&nbsp;Contrat rejeté</small> | &nbsp;&nbsp;
+                      {% endif %}
+                    
+                     <object data="{{ demande.signed_contract_pdf.url }}"
+                            type="application/pdf"
+                            width="100%"
+                            height="600">
+                        <a href="{{ demande.signed_contract_pdf.url }}"  class="text-success"><i class=" bi bi-download"></i> Contrat signé PDF</a>
+                    </object> |&nbsp;&nbsp;
+                    {% if demande.deal == 'acheté' %}
+                        <span class="text-success"><i class="bi bi-check-circle-fill"></i>&nbsp; voiture achetée</span>&nbsp;&nbsp;|
+                        <object data="{{ demande.facture_pdf.url }}"
+                            type="application/pdf"
+                            width="100%"
+                            height="600">
+                        <a href="{{ demande.facture_pdf.url }}"  class="text-success"><i class=" bi bi-file-pdf text-danger"></i> INVOICE DOWNLOAD</a>
+                    </object> |&nbsp;&nbsp;
+                    {% else %}
+                       <a href="{% url 'voitures:buy_car' id=demande.id %}"><i class="bi bi-cart"></i> Passer a l'achat</a>
+                    {% endif %}
+                   
+                 </div>
+
+                {% elif demande.verification == "accepté" %}
+                <div class="alert alert-warning">
+                     <small>please check you email adress to sign the contract sent by Mmotors using yousign</small>
+                </div>
+               
+               
+                {% endif %}
+            
+          </div>
+          {% empty %}
+          <div class="row">
+                <span class="alert alert-warning">vous avez pas de nouvelles demandes de votre part</span>
+          </div>           
+          {% endfor %}
+          <!-- End Faq item-->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /Faq Section -->
