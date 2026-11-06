@@ -179,7 +179,7 @@ STORAGES = {
 # =====================================================
 
 MEDIA_URL = '/voitures/'
-MEDIA_ROOT = BASE_DIR / 'voitures'
+MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", BASE_DIR / "voitures"))
 
 # =====================================================
 # AUTHENTICATION
