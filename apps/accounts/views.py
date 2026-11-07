@@ -25,40 +25,39 @@ from django.contrib.auth import update_session_auth_hash
 
 # sending email to the user email account after registration
 def mailactive(request, user, to_email):
-    mail_subject = 'Welcome to Mmotors.'
-
-    messagetemplate = render_to_string('activate_account.html', {
-        'user': user,
-        'domain': get_current_site(request).domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': account_activation_token.make_token(user),
-        'protocol': 'https' if request.is_secure() else 'http'
-    })
-
-    email = EmailMessage(
-        subject=mail_subject,
-        body=messagetemplate,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[to_email]
-    )
-
-    email.content_subtype = "html"
+    print("DEBUG: mailactive() started", flush=True)
 
     try:
-        result = email.send(fail_silently=False)
-        print("Résultat envoi email :", result)
+        mail_subject = 'Welcome to Mmotors.'
 
-        if result == 1:
-            messages.success(
-                request,
-                "Un email de confirmation a été envoyé. Vérifiez votre boîte de réception et vos spams."
-            )
-        else:
-            messages.error(request, "L'email de confirmation n'a pas pu être envoyé.")
+        messagetemplate = render_to_string('activate_account.html', {
+            'user': user,
+            'domain': get_current_site(request).domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+            'protocol': 'https' if request.is_secure() else 'http'
+        })
+
+        print("DEBUG: Email template generated", flush=True)
+
+        email = EmailMessage(
+            subject=mail_subject,
+            body=messagetemplate,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[to_email]
+        )
+
+        email.content_subtype = "html"
+
+        print("DEBUG: Attempting to send email", flush=True)
+
+        result = email.send(fail_silently=False)
+
+        print(f"DEBUG: Email send result = {result}", flush=True)
 
     except Exception as e:
-        print("ERREUR ENVOI EMAIL :", str(e))
-        messages.error(request, "Erreur lors de l'envoi de l'email de confirmation.")
+        print(f"EMAIL ERROR: {repr(e)}", flush=True)
+        raise
 # Activate user account after clicking in the link sent to email
 def activate(request, uidb64, token):
     User = get_user_model()
