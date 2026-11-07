@@ -26,6 +26,7 @@ from django.contrib.auth import update_session_auth_hash
 # sending email to the user email account after registration
 def mailactive(request, user, to_email):
     mail_subject = 'Welcome to Mmotors.'
+
     messagetemplate = render_to_string('activate_account.html', {
         'user': user,
         'domain': get_current_site(request).domain,
@@ -33,14 +34,31 @@ def mailactive(request, user, to_email):
         'token': account_activation_token.make_token(user),
         'protocol': 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, messagetemplate, to=[to_email])
-    if email.send():
-       return redirect('accounts:success')
-       #messages.success(request, 'Dear  please go to you email  inbox and click on \
-            #received activation link to confirm and complete the registration. Check your spam folder.')
-    else:
-        messages.error(request, f'Problem sending confirmation email to {to_email}, check if you typed it correctly.')
-        
+
+    email = EmailMessage(
+        subject=mail_subject,
+        body=messagetemplate,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[to_email]
+    )
+
+    email.content_subtype = "html"
+
+    try:
+        result = email.send(fail_silently=False)
+        print("Résultat envoi email :", result)
+
+        if result == 1:
+            messages.success(
+                request,
+                "Un email de confirmation a été envoyé. Vérifiez votre boîte de réception et vos spams."
+            )
+        else:
+            messages.error(request, "L'email de confirmation n'a pas pu être envoyé.")
+
+    except Exception as e:
+        print("ERREUR ENVOI EMAIL :", str(e))
+        messages.error(request, "Erreur lors de l'envoi de l'email de confirmation.")
 # Activate user account after clicking in the link sent to email
 def activate(request, uidb64, token):
     User = get_user_model()
