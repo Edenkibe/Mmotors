@@ -64,7 +64,7 @@ class Voiture(models.Model):
     
     #pour ciblé la photo principale sur l annonce
     def main_photo(self):
-        return self.photo.filter(is_main=True).first()
+        return self.photos.filter(is_main=True).first()
 
     #to get the time ago of voiture added 
     @property
