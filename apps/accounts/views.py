@@ -19,6 +19,7 @@ from .tokens import account_activation_token
 from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
+from django.conf import settings
 #the built in django PasswordChangeForm is used to change the password of the user:
 from django.contrib.auth.forms import PasswordChangeForm
 
@@ -38,8 +39,9 @@ def mailactive(request, user, to_email):
         })
 
         email = EmailMessage(
-            mail_subject,
-            messagetemplate,
+            subject=mail_subject,
+            body=messagetemplate,
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email]
         )
 
@@ -47,19 +49,21 @@ def mailactive(request, user, to_email):
 
         result = email.send(fail_silently=False)
 
-        if result:
-            logger.info("Activation email sent successfully to %s", to_email)
+        if result == 1:
+            logger.info("Activation email sent to %s", to_email)
+            messages.success(
+                request,
+                "Registration successful! Check your email to activate your account."
+            )
             return redirect('accounts:success')
 
-        logger.error("Email backend returned 0 for %s", to_email)
-        messages.error(request, "Unable to send confirmation email.")
-        
-    except Exception:
-        logger.exception("Error sending activation email")
+        messages.error(request, "Email could not be sent.")
 
+    except Exception:
+        logger.exception("Activation email sending failed")
         messages.error(
             request,
-            "Problem sending confirmation email. Please try again."
+            "Unable to send activation email. Please try again."
         )
 
     return redirect('accounts:success')
@@ -83,24 +87,33 @@ def activate(request, uidb64, token):
         
 # registration view
 def registration(request):
-    
+
     if request.method == 'POST':
         form = RegisterForm(request.POST)
+
         if form.is_valid():
             user = form.save(commit=False)
-            # Hachage du mot de passe
+
             user.set_password(form.cleaned_data['password'])
-            
             user.is_active = False
             user.save()
-            mailactive(request, user, form.cleaned_data.get('email'))
-            # Send welcome email
-           
-            #login(request, user) this will log in the user directly after registration
-            return redirect('accounts:success')#redirect to success page after registration to inform user to check email for verification link
+
+            # Send activation email
+            return mailactive(
+                request,
+                user,
+                form.cleaned_data['email']
+            )
+
     else:
         form = RegisterForm()
-    return render(request, 'registration.html', {'form': form})     
+
+    return render(
+        request,
+        'registration.html',
+        {'form': form}
+    )
+     
 
 # here admin try to register a user with the role
 def admin_user_registration(request):
@@ -425,3 +438,7 @@ def password_reset_confirm(request, uidb64, token):
         "change_forgotten_password.html",
         {"form": form},
     )
+    
+ 
+    
+    
