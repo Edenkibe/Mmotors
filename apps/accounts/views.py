@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from django.contrib import messages
+import logging
 from django.contrib.auth import login as auth_login, authenticate, logout, get_user_model
 from .forms.registrationForm import RegisterForm,admin_register_userForm
 from .forms.loginForm import LoginForm
@@ -22,14 +23,12 @@ from decimal import Decimal
 from django.contrib.auth.forms import PasswordChangeForm
 
 from django.contrib.auth import update_session_auth_hash
-
+logger = logging.getLogger(__name__)
 # sending email to the user email account after registration
 def mailactive(request, user, to_email):
-    print("DEBUG: mailactive() started", flush=True)
+    mail_subject = 'Welcome to Mmotors.'
 
     try:
-        mail_subject = 'Welcome to Mmotors.'
-
         messagetemplate = render_to_string('activate_account.html', {
             'user': user,
             'domain': get_current_site(request).domain,
@@ -38,26 +37,32 @@ def mailactive(request, user, to_email):
             'protocol': 'https' if request.is_secure() else 'http'
         })
 
-        print("DEBUG: Email template generated", flush=True)
-
         email = EmailMessage(
-            subject=mail_subject,
-            body=messagetemplate,
-            from_email=settings.DEFAULT_FROM_EMAIL,
+            mail_subject,
+            messagetemplate,
             to=[to_email]
         )
 
-        email.content_subtype = "html"
-
-        print("DEBUG: Attempting to send email", flush=True)
+        email.content_subtype = 'html'
 
         result = email.send(fail_silently=False)
 
-        print(f"DEBUG: Email send result = {result}", flush=True)
+        if result:
+            logger.info("Activation email sent successfully to %s", to_email)
+            return redirect('accounts:success')
 
-    except Exception as e:
-        print(f"EMAIL ERROR: {repr(e)}", flush=True)
-        raise
+        logger.error("Email backend returned 0 for %s", to_email)
+        messages.error(request, "Unable to send confirmation email.")
+        
+    except Exception:
+        logger.exception("Error sending activation email")
+
+        messages.error(
+            request,
+            "Problem sending confirmation email. Please try again."
+        )
+
+    return redirect('accounts:success')
 # Activate user account after clicking in the link sent to email
 def activate(request, uidb64, token):
     User = get_user_model()
