@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from django.contrib import messages
+import logging
 from django.contrib.auth import login as auth_login, authenticate, logout, get_user_model
 from .forms.registrationForm import RegisterForm,admin_register_userForm
 from .forms.loginForm import LoginForm
@@ -18,29 +19,54 @@ from .tokens import account_activation_token
 from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
+from django.conf import settings
 #the built in django PasswordChangeForm is used to change the password of the user:
 from django.contrib.auth.forms import PasswordChangeForm
 
 from django.contrib.auth import update_session_auth_hash
-
+logger = logging.getLogger(__name__)
 # sending email to the user email account after registration
 def mailactive(request, user, to_email):
     mail_subject = 'Welcome to Mmotors.'
-    messagetemplate = render_to_string('activate_account.html', {
-        'user': user,
-        'domain': get_current_site(request).domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': account_activation_token.make_token(user),
-        'protocol': 'https' if request.is_secure() else 'http'
-    })
-    email = EmailMessage(mail_subject, messagetemplate, to=[to_email])
-    if email.send():
-       return redirect('accounts:success')
-       #messages.success(request, 'Dear  please go to you email  inbox and click on \
-            #received activation link to confirm and complete the registration. Check your spam folder.')
-    else:
-        messages.error(request, f'Problem sending confirmation email to {to_email}, check if you typed it correctly.')
-        
+
+    try:
+        messagetemplate = render_to_string('activate_account.html', {
+            'user': user,
+            'domain': get_current_site(request).domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+            'protocol': 'https' if request.is_secure() else 'http'
+        })
+
+        email = EmailMessage(
+            subject=mail_subject,
+            body=messagetemplate,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[to_email]
+        )
+
+        email.content_subtype = 'html'
+
+        result = email.send(fail_silently=False)
+
+        if result == 1:
+            logger.info("Activation email sent to %s", to_email)
+            messages.success(
+                request,
+                "Registration successful! Check your email to activate your account."
+            )
+            return redirect('accounts:success')
+
+        messages.error(request, "Email could not be sent.")
+
+    except Exception:
+        logger.exception("Activation email sending failed")
+        messages.error(
+            request,
+            "Unable to send activation email. Please try again."
+        )
+
+    return redirect('accounts:success')
 # Activate user account after clicking in the link sent to email
 def activate(request, uidb64, token):
     User = get_user_model()
@@ -61,24 +87,33 @@ def activate(request, uidb64, token):
         
 # registration view
 def registration(request):
-    
+
     if request.method == 'POST':
         form = RegisterForm(request.POST)
+
         if form.is_valid():
             user = form.save(commit=False)
-            # Hachage du mot de passe
+
             user.set_password(form.cleaned_data['password'])
-            
             user.is_active = False
             user.save()
-            mailactive(request, user, form.cleaned_data.get('email'))
-            # Send welcome email
-           
-            #login(request, user) this will log in the user directly after registration
-            return redirect('accounts:success')#redirect to success page after registration to inform user to check email for verification link
+
+            # Send activation email
+            return mailactive(
+                request,
+                user,
+                form.cleaned_data['email']
+            )
+
     else:
         form = RegisterForm()
-    return render(request, 'registration.html', {'form': form})     
+
+    return render(
+        request,
+        'registration.html',
+        {'form': form}
+    )
+     
 
 # here admin try to register a user with the role
 def admin_user_registration(request):
@@ -403,3 +438,7 @@ def password_reset_confirm(request, uidb64, token):
         "change_forgotten_password.html",
         {"form": form},
     )
+    
+ 
+    
+    

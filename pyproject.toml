@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 88
+exclude = [
+    ".venv",
+    "migrations",
+    "__pycache__"
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "DJ"]
