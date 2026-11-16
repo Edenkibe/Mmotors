@@ -142,28 +142,102 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="col-lg-12 form-group mb-3">
-                    {{ form.lieu_depart.label_tag }}
-                     {{ form.lieu_depart }}
+                
+                <!-- Lieu de départ -->
+                 <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        {{ form.lieu_depart.label_tag }}
+                        {{ form.lieu_depart }}
 
                         {% if form.lieu_depart.errors %}
                             <div class="text-danger">
                                 {{ form.lieu_depart.errors.0 }}
                             </div>
                         {% endif %}
-                </div>
-                <div class="col-lg-12 form-group mb-3">
-                    {{ form.lieu_retour.label_tag }}
-                     {{ form.lieu_retour }}
+                    </div>
+
+                    <!-- Adresse personnalisée du départ -->
+                    <div class="col-lg-6 mb-3"
+                        id="autre-depart-container"
+                        style="display: none;">
+
+                        {{ form.autre_lieu_depart.label_tag }}
+                        {{ form.autre_lieu_depart }}
+
+                        {% if form.autre_lieu_depart.errors %}
+                            <div class="text-danger">
+                                {{ form.autre_lieu_depart.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Lieu de retour -->
+                    <div class="col-lg-6 mb-3">
+                        {{ form.lieu_retour.label_tag }}
+                        {{ form.lieu_retour }}
 
                         {% if form.lieu_retour.errors %}
                             <div class="text-danger">
                                 {{ form.lieu_retour.errors.0 }}
                             </div>
                         {% endif %}
-                </div>
+                    </div>
+
+                    <!-- Adresse personnalisée du retour -->
+                    <div class="col-lg-6 mb-3"
+                        id="autre-retour-container"
+                        style="display: none;">
+
+                        {{ form.autre_lieu_retour.label_tag }}
+                        {{ form.autre_lieu_retour }}
+
+                        {% if form.autre_lieu_retour.errors %}
+                            <div class="text-danger">
+                                {{ form.autre_lieu_retour.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                 </div>
+               
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+
+                    const lieuDepart = document.getElementById("id_lieu_depart");
+                    const lieuRetour = document.getElementById("id_lieu_retour");
+
+                    const autreDepart = document.getElementById("autre-depart-container");
+                    const autreRetour = document.getElementById("autre-retour-container");
+
+                    const inputAutreDepart = document.getElementById("id_autre_lieu_depart");
+                    const inputAutreRetour = document.getElementById("id_autre_lieu_retour");
+
+                    function gererLieu(select, container, input) {
+                        if (select.value === "Autre") {
+                            container.style.display = "block";
+                        } else {
+                            container.style.display = "none";
+                            input.value = "";
+                        }
+                    }
+
+                    // Vérification initiale
+                    gererLieu(lieuDepart, autreDepart, inputAutreDepart);
+                    gererLieu(lieuRetour, autreRetour, inputAutreRetour);
+
+                    // Lorsque le client change le lieu
+                    lieuDepart.addEventListener("change", function () {
+                        gererLieu(lieuDepart, autreDepart, inputAutreDepart);
+                    });
+
+                    lieuRetour.addEventListener("change", function () {
+                        gererLieu(lieuRetour, autreRetour, inputAutreRetour);
+                    });
+
+                });
+         </script>
          </div>
       </div>
     </div>
