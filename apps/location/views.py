@@ -53,7 +53,13 @@ def creer_dossier_location(request, id):
         form = DossierLocationForm()
     context ={"form": form,"voiture": voiture,'dossier_exist': dossier_exist,'count': count}
     return render(request, "depot_location.html", context)
-    
+ 
+#admin delete a user demande de location:
+def admin_delete_location_request(request, id):
+    demande=DossierLocation.objects.get(id=id)
+    demande.delete()
+    return redirect ('locations:get_demande_location')  
+  
 #recuperer la voiture pour la location: demander a l'utilisateur si il est d accord avec le prix de la location et le nombre de jours de location: 
 def user_satisfaction_location(request, id):
     

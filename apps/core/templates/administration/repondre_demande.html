@@ -306,18 +306,20 @@
           <div class="col-sm-6 mb-3 mb-sm-0">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <h5 class="card-title">info sur le demandeur </h5>
+                <small>Contact: {{ demandes.client.email }}</small>,&nbsp; email direct: {{ demandes.email }} <br>
+                <small>Phone: {{ demandes.telephone }}</small>,&nbsp; nom complet: {{ demandes.nom_complet }} <br>
+                <a href="{% url 'core:admin_delete_demande_achat' id=demandes.id %}" class="text-danger"><i class="bi bi-trash" title="delete"></i></a>
               </div>
             </div>
           </div>
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <h5 class="card-title">Info sur la voiture</h5>
+                 <small>Voiture: {{ demandes.vehicule.marque }}</small>,&nbsp; modele: {{ demandes.vehicule.modele }},&nbsp; Etat: {{ demandes.vehicule.etat }} <br>
+                 <small>Type: {{ demandes.vehicule.type }}</small>,&nbsp; Nature: {{ demandes.vehicule.boite }},&nbsp; Année:{{ demandes.vehicule.annee }} <br>
+                 <a href="{% url 'core:admin_delete_demande_achat' id=demandes.id %}" class="text-danger"><i class="bi bi-trash" title="delete"></i></a>
               </div>
             </div>
           </div>

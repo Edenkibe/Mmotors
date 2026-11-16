@@ -21,5 +21,7 @@ urlpatterns = [
     path('user_info/', views.user_info, name='user_info'),
     path('user_all_request/', views.user_all_request, name='user_all_request'),
     path('delete_all_users/', views.delete_all_user, name='delete_all_user'),
-    path('user_location_request/', views.user_location_request, name='user_location_request')
+    path('user_location_request/', views.user_location_request, name='user_location_request'),
+    path('user_delete_location_request/<int:id>/', views.user_delete_location_request, name='user_delete_location_request'),
+    path('user_delete_request_achat/<int:id>/', views.user_delete_request_achat, name='user_delete_request_achat')
 ]

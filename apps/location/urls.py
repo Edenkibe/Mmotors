@@ -21,4 +21,5 @@ urlpatterns = [
   path('user_not_satisfied_location/<int:id>/', views.user_not_satisfied_location, name='user_not_satisfied_location'),
   path('unsuccess_location/', views.unsuccess_location, name='unsuccess_location'),
   path('redirect_after_responding/', views.redirect_after_responding, name='redirect_after_responding'),
+  path('admin_delete_location_request/<int:id>/', views.admin_delete_location_request, name='admin_delete_location_request'),
 ]

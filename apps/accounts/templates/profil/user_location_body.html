@@ -128,13 +128,12 @@
                     {% endif %}
                    
                  </div>
-
                 {% elif demande.status == "accepté" and demande.mysignature == "not yet" %}
                 <div class="alert alert-warning">
                      <small>please check you email adress to sign the contract sent by Mmotors using yousign</small>
                 </div>             
                 {% endif %}
-                 <a href="">Effacer</a>
+                 <a href="{% url 'accounts:user_delete_location_request' id=demande.id %}"><i class="bi bi-trash" title="delete"></i></a>
             <!-- bar de progression --> 
           </div>
          

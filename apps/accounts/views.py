@@ -286,6 +286,12 @@ def user_all_request(request):
     }
     return render(request, 'profil/request_user.html',context)
 
+# user delete sa demande d achat de voiture:
+def user_delete_request_achat(request,id):
+    demande=DossierAchat.objects.get(id=id)
+    demande.delete()
+    return redirect('accounts:user_all_request')  # Redirect to the user all request page after deletion
+
 @login_required
 def user_location_request(request):
    
@@ -327,13 +333,19 @@ def user_location_request(request):
     }
     return render(request, 'profil/user_location_request.html',context)
 
+#user efface sa demande de location de voiture:
+def user_delete_location_request(request,id):
+    location=DossierLocation.objects.get(id=id)
+    location.delete()
+    return redirect('accounts:user_location_request')  # Redirect to the user location request page after deletion
+
 #change password view with the django built-in PasswordChangeForm
 @login_required
 def change_password(request):
     
     if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST)
-
+        
         if form.is_valid():
             user = form.save()
 
