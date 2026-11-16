@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 from django.db import transaction
 #to save the contract signed in the db:
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 
 # home page, ici on cherche la voiture en location:
@@ -663,8 +665,10 @@ def admin_search_user(request):
 #------------------------------------------------------------------------------
 #admin demande achat and location management!               
 # admin  efface une demande  d achat d un client:
+@login_required
+@require_POST
 def admin_delete_demande_achat(request,id):
-    demande=DossierAchat.objects.get(id=id)
+    demande=get_object_or_404(DossierAchat, id=id)
     demande.delete()
     return redirect('dossiers:all_demandes')  # Redirect to the admin manage demandes page after deletion
 #repondre a une demande achat

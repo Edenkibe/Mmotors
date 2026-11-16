@@ -14,9 +14,10 @@ from django.views.decorators.csrf import csrf_exempt
 import stripe
 from django.http import HttpResponse
 from decimal import Decimal
-from django.utils import timezone
 from django.db import transaction
-from datetime import date, datetime
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
 
 def creer_dossier_location(request, id):
     voiture = get_object_or_404(Voiture, id=id)
@@ -55,8 +56,10 @@ def creer_dossier_location(request, id):
     return render(request, "depot_location.html", context)
  
 #admin delete a user demande de location:
+@login_required
+@require_POST
 def admin_delete_location_request(request, id):
-    demande=DossierLocation.objects.get(id=id)
+    demande=get_object_or_404(DossierLocation, id=id)
     demande.delete()
     return redirect ('locations:get_demande_location')  
   

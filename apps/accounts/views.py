@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render,get_object_or_404
 from django.contrib import messages
 import logging
 from django.contrib.auth import login as auth_login, authenticate, logout, get_user_model
@@ -18,6 +18,7 @@ from django.core.mail import EmailMessage
 from .tokens import account_activation_token
 from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from decimal import Decimal
 from django.conf import settings
 #the built in django PasswordChangeForm is used to change the password of the user:
@@ -287,8 +288,9 @@ def user_all_request(request):
     return render(request, 'profil/request_user.html',context)
 
 # user delete sa demande d achat de voiture:
+@require_POST
 def user_delete_request_achat(request,id):
-    demande=DossierAchat.objects.get(id=id)
+    demande=get_object_or_404(DossierAchat, id=id)
     demande.delete()
     return redirect('accounts:user_all_request')  # Redirect to the user all request page after deletion
 
@@ -334,8 +336,9 @@ def user_location_request(request):
     return render(request, 'profil/user_location_request.html',context)
 
 #user efface sa demande de location de voiture:
+@require_POST
 def user_delete_location_request(request,id):
-    location=DossierLocation.objects.get(id=id)
+    location=get_object_or_404(DossierLocation, id=id)
     location.delete()
     return redirect('accounts:user_location_request')  # Redirect to the user location request page after deletion
 
