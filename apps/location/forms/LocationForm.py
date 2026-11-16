@@ -66,6 +66,15 @@ class DossierLocationForm(forms.ModelForm):
             "lieu_retour": forms.Select(attrs={
                 "class": "form-select"
             }),
+            # Nouveaux champs
+            "autre_lieu_depart": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Précisez l'adresse de départ"
+            }),
+            "autre_lieu_retour": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Précisez l'adresse de retour"
+            }),
         }
         labels = {
             "nom_complet": "Nom et prénom",
@@ -78,6 +87,9 @@ class DossierLocationForm(forms.ModelForm):
             "date_retour": "Date et heure de retour",
             "lieu_depart": "Lieu de prise en charge",
             "lieu_retour": "Lieu de restitution",
+             # Nouveaux labels
+            "autre_lieu_depart": "Adresse personnalisée du départ",
+            "autre_lieu_retour": "Adresse personnalisée du retour",
         }
 
     def __init__(self, *args, **kwargs):
@@ -90,3 +102,28 @@ class DossierLocationForm(forms.ModelForm):
         self.fields["date_retour"].input_formats = [
             "%Y-%m-%dT%H:%M"
         ]
+     
+    #il verifie que le client ne peut pas choisir "Autre" sans remplir le champ correspondant:    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        lieu_depart = cleaned_data.get("lieu_depart")
+        lieu_retour = cleaned_data.get("lieu_retour")
+
+        autre_lieu_depart = cleaned_data.get("autre_lieu_depart")
+        autre_lieu_retour = cleaned_data.get("autre_lieu_retour")
+
+        if lieu_depart == "Autre" and not (autre_lieu_depart or "").strip():
+            self.add_error(
+                "autre_lieu_depart",
+                "Veuillez préciser l'adresse de départ."
+            )
+
+        if lieu_retour == "Autre" and not (autre_lieu_retour or "").strip():
+            self.add_error(
+                "autre_lieu_retour",
+                "Veuillez préciser l'adresse de retour."
+            )
+
+        return cleaned_data
+    

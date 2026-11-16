@@ -51,14 +51,9 @@ def creer_dossier_location(request, id):
 
     else:
         form = DossierLocationForm()
-
-    return render(request, "depot_location.html", {
-        "form": form,
-        "voiture": voiture,
-        'dossier_exist': dossier_exist,
-        'count': count
-    })
-
+    context ={"form": form,"voiture": voiture,'dossier_exist': dossier_exist,'count': count}
+    return render(request, "depot_location.html", context)
+    
 #recuperer la voiture pour la location: demander a l'utilisateur si il est d accord avec le prix de la location et le nombre de jours de location: 
 def user_satisfaction_location(request, id):
     

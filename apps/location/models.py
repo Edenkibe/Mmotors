@@ -144,6 +144,19 @@ class DossierLocation(models.Model):
         blank=True,
         null=True
     )
+    autre_lieu_depart = models.CharField(
+    max_length=255,
+    blank=True,
+    null=True,
+    verbose_name="autre lieu du départ"
+    )
+
+    autre_lieu_retour = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="autre lieu du retour"
+    )
     
     def __str__(self):
         return f"Dossier #{self.id} - {self.nom_complet}"
