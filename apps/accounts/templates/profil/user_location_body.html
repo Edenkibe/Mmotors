@@ -132,12 +132,12 @@
                 {% elif demande.status == "accepté" and demande.mysignature == "not yet" %}
                 <div class="alert alert-warning">
                      <small>please check you email adress to sign the contract sent by Mmotors using yousign</small>
-                </div>
-               <a href="{% url 'dossiers:rejected_notification' id=notification.id %}">Effacer</a>
-                             
+                </div>             
                 {% endif %}
+                 <a href="">Effacer</a>
             <!-- bar de progression --> 
           </div>
+         
           {% empty %}
           <div class="row">
                 <span class="alert alert-warning">vous avez pas de nouvelles demandes de votre part</span>

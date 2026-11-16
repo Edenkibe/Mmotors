@@ -327,7 +327,6 @@ def user_location_request(request):
     }
     return render(request, 'profil/user_location_request.html',context)
 
-def user_delete_location(request, id):
 #change password view with the django built-in PasswordChangeForm
 @login_required
 def change_password(request):
