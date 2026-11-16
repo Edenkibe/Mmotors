@@ -8,7 +8,8 @@ Repository Git public contenant le projet.
 
 - main : branche principale contenant les versions stables.
 - develop : branche utilisée pour le développement et l'intégration des fonctionnalités.
-- feature/login-user: pour faire le test de connexion
+- feature/demande-location: une nouvelle fonctionalité sur la demande
+- feature/display-choix-lieu-template: ajout de la fonctionalité sur delete demande 
 
 ## Convention de nommage des branches
 
