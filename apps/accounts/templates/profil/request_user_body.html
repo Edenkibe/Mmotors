@@ -133,10 +133,11 @@
                 <div class="alert alert-warning">
                      <small>please check you email adress to sign the contract sent by Mmotors using yousign</small>
                 </div>
-               
-               
+                   
                 {% endif %}
-            
+                <a href="{% url 'accounts:user_delete_request_achat' id=demande.id %}" class="text-danger" title="delete">
+                    <i class="bi bi-trash"></i>
+                </a>
           </div>
           {% empty %}
           <div class="row">
