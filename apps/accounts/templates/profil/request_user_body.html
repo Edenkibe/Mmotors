@@ -135,9 +135,10 @@
                 </div>
                    
                 {% endif %}
-                <a href="{% url 'accounts:user_delete_request_achat' id=demande.id %}" class="text-danger" title="delete">
-                    <i class="bi bi-trash"></i>
-                </a>
+                <form method="POST" action="{% url 'accounts:user_delete_request_achat' demande.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none;background: none;"><i class="bi bi-trash text-danger" title="delete"></i></button>
+                </form>
           </div>
           {% empty %}
           <div class="row">

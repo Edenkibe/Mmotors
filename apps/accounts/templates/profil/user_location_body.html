@@ -133,7 +133,10 @@
                      <small>please check you email adress to sign the contract sent by Mmotors using yousign</small>
                 </div>             
                 {% endif %}
-                 <a href="{% url 'accounts:user_delete_location_request' id=demande.id %}"><i class="bi bi-trash" title="delete"></i></a>
+                 <form method="POST" action="{% url 'accounts:user_delete_location_request' id=demande.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none;background: none;"><i class="bi bi-trash text-danger" title="delete"></i></button>
+                 </form>
             <!-- bar de progression --> 
           </div>
          

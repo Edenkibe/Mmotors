@@ -309,7 +309,10 @@
                 <h5 class="card-title">info sur le demandeur </h5>
                 <small>Contact: {{ demandes.client.email }}</small>,&nbsp; email direct: {{ demandes.email }} <br>
                 <small>Phone: {{ demandes.telephone }}</small>,&nbsp; nom complet: {{ demandes.nom_complet }} <br>
-                <a href="{% url 'core:admin_delete_demande_achat' id=demandes.id %}" class="text-danger"><i class="bi bi-trash" title="delete"></i></a>
+                 <form method="POST" action="{% url 'core:admin_delete_demande_achat' id=demandes.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none;background: none;"><i class="bi bi-trash text-danger" title="delete"></i></button>
+                </form>
               </div>
             </div>
           </div>
@@ -319,7 +322,10 @@
                 <h5 class="card-title">Info sur la voiture</h5>
                  <small>Voiture: {{ demandes.vehicule.marque }}</small>,&nbsp; modele: {{ demandes.vehicule.modele }},&nbsp; Etat: {{ demandes.vehicule.etat }} <br>
                  <small>Type: {{ demandes.vehicule.type }}</small>,&nbsp; Nature: {{ demandes.vehicule.boite }},&nbsp; Année:{{ demandes.vehicule.annee }} <br>
-                 <a href="{% url 'core:admin_delete_demande_achat' id=demandes.id %}" class="text-danger"><i class="bi bi-trash" title="delete"></i></a>
+                 <form method="POST" action="{% url 'core:admin_delete_demande_achat' id=demandes.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none;background: none;"><i class="bi bi-trash text-danger" title="delete"></i></button>
+                </form>
               </div>
             </div>
           </div>

@@ -309,7 +309,11 @@
                     <small>Lieu retour: {{ demandes.autre_lieu_retour }} le {{ demandes.date_retour|date:"d-m-y" }} à {{ demandes.date_retour|date:"h:i A" }} </small>
                     {% else %}
                     <small>Lieu retour: {{ demandes.lieu_retour }} le {{ demandes.date_retour|date:"d-m-y" }} à {{ demandes.date_retour|date:"h:i A" }} </small>
-                  {% endif %} 
+                  {% endif %} <br>
+                   <form method="POST" action="{% url 'locations:admin_delete_location_request' id=demandes.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none;background: none;"><i class="bi bi-trash text-danger" title="delete"></i></button>
+                 </form>
                
               </div>
             </div>
@@ -321,9 +325,11 @@
                  <small>Date depart: Du {{ demandes.date_depart|date:"d-m-y" }} à {{ demandes.date_depart|date:"h:i A" }} </small>,
                   <small>Date retour: Au {{ demandes.date_retour|date:"d-m-y" }} à {{ demandes.date_retour|date:"h:i A" }} </small>
                   <br>
-                <a href="{% url 'locations:admin_delete_location_request' id=demandes.id %}" class="text-danger" title="delete">
-                    <i class="bi bi-trash"></i>
-                </a>
+                   <form method="POST" action="{% url 'locations:admin_delete_location_request' id=demandes.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none;background: none;"><i class="bi bi-trash text-danger" title="delete"></i></button>
+                 </form>
+                
               </div>
             </div>
           </div>
