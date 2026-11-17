@@ -671,6 +671,7 @@ def admin_delete_demande_achat(request,id):
     demande=get_object_or_404(DossierAchat, id=id)
     demande.delete()
     return redirect('dossiers:all_demandes')  # Redirect to the admin manage demandes page after deletion
+
 #repondre a une demande achat
 def repondre(request,id):
     
