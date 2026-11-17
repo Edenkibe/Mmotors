@@ -130,6 +130,9 @@ class CreerDossierLocationTest(TestCase):
             date_retour="2023-01-01 18:00:00",
             lieu_depart="Lieu de prise en charge",
             lieu_retour="Lieu de restitution",
+            autre_lieu_depart="Adresse personnalisée du départ",
+            autre_lieu_retour="Adresse personnalisée du retour",
+            
             # Ajoute les autres champs obligatoires
         )
 
@@ -161,6 +164,8 @@ class CreerDossierLocationTest(TestCase):
             date_retour="2023-01-01 18:00:00",
             lieu_depart="Lieu de prise en charge",
             lieu_retour="Lieu de restitution",
+            autre_lieu_depart="Adresse personnalisée du départ",
+            autre_lieu_retour="Adresse personnalisée du retour",
             # Ajoute les autres champs obligatoires
         )
 
@@ -178,6 +183,8 @@ class CreerDossierLocationTest(TestCase):
             date_retour="2023-01-01 18:00:00",
             lieu_depart="Lieu de prise en charge",
             lieu_retour="Lieu de restitution",
+            autre_lieu_depart="Adresse personnalisée du départ",
+            autre_lieu_retour="Adresse personnalisée du retour",
             # Ajoute les autres champs obligatoires
         )
 

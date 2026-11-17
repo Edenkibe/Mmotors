@@ -22,6 +22,7 @@ urlpatterns = [
     path('repondre<int:id>/',views.repondre, name='repondre'),
     path('action_admin',views.action_admin, name='action_admin'),
     path('search_action',views.search_action, name='search_action'),
-    path('contact_client/<int:id>/',views.contact_client, name='contact_client')
+    path('contact_client/<int:id>/',views.contact_client, name='contact_client'),
+    path('admin_delete_demande_achat/<int:id>/', views.admin_delete_demande_achat, name='admin_delete_demande_achat'),
     
 ]   
