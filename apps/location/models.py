@@ -1,9 +1,12 @@
 import secrets
 import string
-from django.db import models
 import uuid
+
+from django.db import models
+
 from apps.accounts.models import User
 from apps.voiture.models import Voiture
+
 
 #url du generated pdf
 def pdf_location_contrat_path(instance, filename):
@@ -24,7 +27,7 @@ def facture_path(instance, filename):
     return f' invoice/{instance.client.first_name}/{instance.client.last_name}-{instance.vehicule.marque}/{filename}'
 
 class DossierLocation(models.Model):
- 
+
     client = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -62,11 +65,11 @@ class DossierLocation(models.Model):
         choices=pays_choise,
         default='France'
     )
-    message = models.TextField( blank=True,null=True)
+    message = models.TextField(blank=True,default='not yet')
     date_creation = models.DateTimeField(auto_now_add=True)
     date_depart = models.DateTimeField()
     date_retour = models.DateTimeField()
-    
+
     lieu_prise_en_charge_choix= [
         ('Aéroport saint exupery', 'Aéroport saint exupery'),
         ('Gare part dieu', 'Gare part dieu'),
@@ -93,7 +96,7 @@ class DossierLocation(models.Model):
         choices=lieu_du_retour_choix,
         default='Aéroport saint exupery'
     )
-   
+
     code_location = models.CharField(max_length=12, unique=True, editable=False, blank=True, null=True)
     status_choix= [
         ('accepté', 'accepté'),
@@ -107,38 +110,38 @@ class DossierLocation(models.Model):
     )
     mysignature = models.CharField(
         max_length=20,
-         default='not yet'
+        default='not yet'
     )
     deal = models.CharField(
         max_length=20,
         default='disponible'
     )
-     
+
     yousign_request_id = models.CharField(
     max_length=100,
     blank=True,
-    null=True
+    default="",
     )
-    
+
     yousign_document_id = models.CharField(
     max_length=255,
-    null=True,
-    blank=True
+    blank=True,
+    default="",
     )
-          
+
     signed_contract_pdf = models.FileField(
         upload_to=signed_location_contrat_path,
         null=True,
         blank=True
     )
-    
+
     #generate the pdf after approuve:
     contrat_pdf = models.FileField(
         upload_to=pdf_location_contrat_path,
         blank=True,
         null=True
     )
-    
+
     facture_pdf = models.FileField(
         upload_to=facture_path,
         blank=True,
@@ -147,20 +150,19 @@ class DossierLocation(models.Model):
     autre_lieu_depart = models.CharField(
     max_length=255,
     blank=True,
-    null=True,
+    default='',
     verbose_name="autre lieu du départ"
     )
 
     autre_lieu_retour = models.CharField(
         max_length=255,
         blank=True,
-        null=True,
+        default='',
         verbose_name="autre lieu du retour"
     )
-    
+
     def __str__(self):
         return f"Dossier #{self.id} - {self.nom_complet}"
-    
     # Generate a unique code for the dossier location before saving
     def save(self, *args, **kwargs):
         if not self.code_location:
@@ -172,11 +174,9 @@ class DossierLocation(models.Model):
                     break
 
         super().save(*args, **kwargs)
-        
-
 
 class payementLocation(models.Model):
- 
+
     location = models.ForeignKey(
         DossierLocation,
         on_delete=models.CASCADE,
@@ -185,35 +185,36 @@ class payementLocation(models.Model):
 
     stripe_session_id = models.CharField(
         max_length=255,
-        null=True,
+        default="",
         blank=True
     )
 
     stripe_payment_intent = models.CharField(
             max_length=255,
-            null=True,
+            default="",
             blank=True
         )
-    
+
     stripe_customer_id = models.CharField(
             max_length=255,
-            null=True,
+            default="",
             blank=True
         )
-    
+
     paid_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,
         blank=True
     )
-    
+
     paid_currency = models.CharField(
             max_length=10,
-            null=True,
-            blank=True
+            blank=True,
+            default=""
         )
 
     paid = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"Dossier #{self.location.id} - {self.paid_amount}"

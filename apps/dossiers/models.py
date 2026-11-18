@@ -1,14 +1,13 @@
 import secrets
 import string
+import uuid
+from datetime import timedelta
 
 from django.db import models
-import uuid
-from django.db import models
-from apps.accounts.models import User
-from apps.voiture.models import Voiture
-from datetime import timedelta 
 from django.utils import timezone
 
+from apps.accounts.models import User
+from apps.voiture.models import Voiture
 
 #on cree le dossier ou sera stocker les fichiers:
 
@@ -37,7 +36,7 @@ def facture_path(instance, filename):
     return f' invoice/{instance.client.first_name}/{instance.client.last_name}-{instance.vehicule.marque}/{filename}'
 
 class DossierAchat(models.Model):
- 
+
     client = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -58,7 +57,7 @@ class DossierAchat(models.Model):
 
     # Documents
     piece_identite = models.FileField(upload_to=file_place_path)
-    
+
     # code unique du dossier pour l identification du dossier et le suivi de l etat du dossier:
     code_dossier = models.CharField(
         max_length=10,
@@ -82,62 +81,62 @@ class DossierAchat(models.Model):
         choices=verification_choise,
         default='pending...'
     )
-    message = models.TextField( blank=True,null=True)
+    message = models.TextField(blank=True,default='not yet')
     mysignature = models.CharField(max_length=20,default='not yet')
-   
+
    #generate the pdf after approuve
     contrat_pdf = models.FileField(
         upload_to=pdf_contrat_path,
         blank=True,
         null=True
     )
-    
+
     facture_pdf = models.FileField(
         upload_to=facture_path,
         blank=True,
         null=True
     )
-    
+
     yousign_request_id = models.CharField(
     max_length=100,
-    blank=True,
-    null=True
-    )
-    
-    yousign_document_id = models.CharField(
-    max_length=255,
-    null=True,
+    default="",
     blank=True
     )
-    
+
+    yousign_document_id = models.CharField(
+    max_length=100,
+    default="",
+    blank=True
+    )
+
     signed_contract_pdf = models.FileField(
         upload_to=signed_contrat_path,
         null=True,
         blank=True
     )
-    
+
     deal = models.CharField(
             max_length=20,
             default='encours'
         )
-    
+
     # Stripe information
     stripe_session_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True
+    max_length=100,
+    default="",
+    blank=True
     )
 
     stripe_payment_intent = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True
+    max_length=100,
+    default="",
+    blank=True
     )
 
     stripe_customer_id = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True
+    max_length=100,
+    default="",
+    blank=True
     )
 
     paid_amount = models.DecimalField(
@@ -148,19 +147,19 @@ class DossierAchat(models.Model):
     )
 
     paid_currency = models.CharField(
-        max_length=10,
-        null=True,
-        blank=True
+    max_length=100,
+    default="",
+    blank=True
     )
 
     paid_at = models.DateTimeField(
         null=True,
         blank=True
     )
-    
+
     def __str__(self):
         return f"Dossier #{self.id} - {self.nom_complet}"
-    
+
     # Generate a unique code for the dossier before saving
     def save(self, *args, **kwargs):
         if not self.code_dossier:
@@ -172,9 +171,9 @@ class DossierAchat(models.Model):
                     break
 
         super().save(*args, **kwargs)
-        
+
     #to get the time ago of paid_at
-    
+
     @property
     def since_created(self):
             """
@@ -182,7 +181,7 @@ class DossierAchat(models.Model):
             """
             now = timezone.now()
             diff = now - self.paid_at
-    
+
             if diff < timedelta(minutes=1):
                 return "à l'instant"
             elif diff < timedelta(hours=1):
@@ -199,4 +198,4 @@ class DossierAchat(models.Model):
                 return f"il y a {months} mois"
             else:
                 years = int(diff.days / 365)
-                return f"il y a {years} an{'s' if years > 1 else ''}"    
+                return f"il y a {years} an{'s' if years > 1 else ''}"

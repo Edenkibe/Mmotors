@@ -1,10 +1,8 @@
 
-from django.test import TestCase, Client
-from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.messages import get_messages
+from django.test import Client, TestCase
+from django.urls import reverse
 
-from apps.promotion.forms.promoForm import promotionForm
 from apps.promotion.forms.promoForm import promotionForm
 from apps.promotion.models import Promotion
 from apps.voiture.models import Photo, Voiture
@@ -21,17 +19,17 @@ class CreatePromotionTest(TestCase):
             username='testuser',
             email='test@example.com',
             password='testpass123'
-        )        
+        )
         self.client = Client()
-       
+
         # Connexion forcée de l'utilisateur avec force_login pour simuler un utilisateur connecté
         self.client.force_login(self.user)
-        
+
         # Créer une voiture disponible pour l'achat
         self.car1 = Voiture.objects.create(
             marque="Toyota",
             type="Achat",
-            disponibilite="Visible",          
+            disponibilite="Visible",
             modele="Corolla",
             annee=2020,
             prix=20000,
@@ -41,7 +39,7 @@ class CreatePromotionTest(TestCase):
             etat="Bon",
             description="Voiture en parfait état"
         )
-        
+
         self.url = reverse(
         "promotion:create_promotion",
         kwargs={"id": self.car1.id}

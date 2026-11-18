@@ -1,12 +1,12 @@
+from unittest.mock import patch
+
+from django import forms
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from unittest.mock import patch
+from django.shortcuts import redirect
 from apps.accounts.forms.loginForm import LoginForm
-from django import forms
-
 User = get_user_model()
-
 
 class RegistrationTestCase(TestCase):
 
@@ -21,10 +21,13 @@ class RegistrationTestCase(TestCase):
         self.assertTemplateUsed(response, 'registration.html')
         self.assertIn('form', response.context)
 
-     
-    # la registration réussie est testée avec un patch pour simuler l'envoi d'email    
+
+    # la registration réussie est testée avec un patch pour simuler l'envoi d'email
     @patch('apps.accounts.views.mailactive')
     def test_registration_success(self, mock_mailactive):
+        """Tester une inscription réussie."""
+
+        mock_mailactive.return_value = redirect('accounts:success')
 
         data = {
             'email': 'test@example.com',
@@ -37,30 +40,19 @@ class RegistrationTestCase(TestCase):
             data=data
         )
 
-        # Vérifier la redirection
-        self.assertRedirects(
-            response,
-            reverse('accounts:success')
-        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('accounts:success'))
 
-        # Vérifier la création
         self.assertEqual(User.objects.count(), 1)
 
         user = User.objects.get(email='test@example.com')
 
-        # Vérifier les informations
         self.assertEqual(user.username, 'testuser')
-
-        # Vérifier que le compte est désactivé
         self.assertFalse(user.is_active)
+        self.assertTrue(user.check_password('TestPassword123!'))
 
-        # Vérifier le hachage du mot de passe
-        self.assertTrue(
-            user.check_password('TestPassword123!')
-        )
-
-        # Vérifier l'envoi du mail
         mock_mailactive.assert_called_once()
+
 
     @patch('apps.accounts.views.mailactive')
     def test_registration_invalid_form(self, mock_mailactive):
@@ -85,8 +77,8 @@ class RegistrationTestCase(TestCase):
 
         # Aucun email ne doit être envoyé
         mock_mailactive.assert_not_called()
-        
-# login view test cases: 
+
+# login view test cases:
 class LoginTestCase(TestCase):
 
     def setUp(self):
@@ -104,7 +96,7 @@ class LoginTestCase(TestCase):
 
     def tearDown(self):
         LoginForm.base_fields['captcha'] = self.original_captcha
-            
+
     def test_login_wrong_password(self):
             """Connexion avec un mauvais mot de passe."""
 
@@ -138,7 +130,7 @@ class LoginTestCase(TestCase):
             response.context['error'],
             'Email or password is incorrect'
         )
-  
+
     def test_login_inactive_user(self):
         """Connexion avec un compte désactivé."""
 
@@ -160,7 +152,7 @@ class LoginTestCase(TestCase):
         )
 
         self.assertNotIn('_auth_user_id', self.client.session)
-        
+
 
 # logout test cases:
 class LogoutTestCase(TestCase):
@@ -202,5 +194,5 @@ class LogoutTestCase(TestCase):
         self.assertRedirects(response, self.login_url)
 
         # Vérifier que personne n'est connecté
-        self.assertNotIn('_auth_user_id', self.client.session)        
+        self.assertNotIn('_auth_user_id', self.client.session)
 

@@ -1,16 +1,16 @@
-from urllib import response
 
-from django.utils import timezone
 from datetime import datetime
+from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from unittest.mock import patch
+from django.utils import timezone
+
 from apps.location.models import DossierLocation
-from django.contrib.auth import get_user_model
-User = get_user_model()
-from apps.contact.models import ContactDossier
 from apps.voiture.models import Voiture
+
+User = get_user_model()
 
 # affichage du formulaire de contact et test du formulaire
 class ContactDossierTestCase(TestCase):
@@ -33,7 +33,7 @@ class ContactDossierTestCase(TestCase):
             etat='Occasion',
             description='Une voiture en bon état.',
         )
-        
+
         self.contact_url = reverse('contact:contact_dossier')
         self.dossier = DossierLocation.objects.create(
             code_location='S5L4Y2YMF130',
@@ -51,8 +51,8 @@ class ContactDossierTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')
         self.assertIn('form', response.context)
-        
-    # test envoie du formulaire de contact avec un patch pour simuler l'envoi d'email   
+
+    # test envoie du formulaire de contact avec un patch pour simuler l'envoi d'email
     @patch('apps.contact.views.send_contact_email')
     def test_contact_success(self, mock_send_email):
         data = {
@@ -69,8 +69,8 @@ class ContactDossierTestCase(TestCase):
         print("URL:", getattr(response, 'url', None))
 
         self.assertEqual(response.status_code, 302)
-        
-    # test invalide du formulaire:  
+
+    # test invalide du formulaire:
     @patch('apps.contact.views.send_contact_email')
     def test_contact_invalid_form(self, mock_send_email):
         response = self.client.post(self.contact_url, {})
@@ -78,4 +78,4 @@ class ContactDossierTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')
 
-        mock_send_email.assert_not_called()    
+        mock_send_email.assert_not_called()

@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
 from django.contrib import messages
 from django.core.mail import EmailMessage
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+
 from apps.contact.forms.contactForm import ContactDossierForm
 
 
@@ -24,7 +24,7 @@ def send_contact_email(contact, to_email):
         to=[to_email],
     )
     email.content_subtype = "html" # this render the email as html without html tags:
-      
+
     return email.send()
 
 # here to contact the admin
@@ -61,8 +61,8 @@ def contact_dossier(request):
             "form": form
         }
     )
-    
+
 def success_page(request):
-    return render(request, "success_page.html")    
-    
+    return render(request, "success_page.html")
+
 

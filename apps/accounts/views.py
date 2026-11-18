@@ -1,30 +1,39 @@
-from django.shortcuts import redirect, render,get_object_or_404
-from django.contrib import messages
 import logging
-from django.contrib.auth import login as auth_login, authenticate, logout, get_user_model
-from .forms.registrationForm import RegisterForm,admin_register_userForm
-from .forms.loginForm import LoginForm
-from .forms.info_modificationForm import InfoModificationForm 
-from .forms.resetpassForm import PasswordResetForm
-from .forms.forgotten_set_passwordForm import SetPasswordForm   
-from .models import User
-from apps.dossiers.models import DossierAchat
-from apps.location.models import DossierLocation
-from django.template.loader import render_to_string
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.core.mail import EmailMessage
-from .tokens import account_activation_token
-from django.db.models.query_utils import Q
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from decimal import Decimal
+
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import (
+    authenticate,
+    get_user_model,
+    logout,
+    update_session_auth_hash,
+)
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.decorators import login_required
+
 #the built in django PasswordChangeForm is used to change the password of the user:
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.db.models.query_utils import Q
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.decorators.http import require_POST
 
-from django.contrib.auth import update_session_auth_hash
+from apps.dossiers.models import DossierAchat
+from apps.location.models import DossierLocation
+
+from .forms.forgotten_set_passwordForm import SetPasswordForm
+from .forms.info_modificationForm import InfoModificationForm
+from .forms.loginForm import LoginForm
+from .forms.registrationForm import RegisterForm, admin_register_userForm
+from .forms.resetpassForm import PasswordResetForm
+from .models import User
+from .tokens import account_activation_token
+
 logger = logging.getLogger(__name__)
 # sending email to the user email account after registration
 def mailactive(request, user, to_email):
@@ -83,9 +92,9 @@ def activate(request, uidb64, token):
         return redirect('accounts:login')
     else:
         messages.error(request, 'Activation link is invalid!')
-    
+
     return redirect('core:home')
-        
+
 # registration view
 def registration(request):
 
@@ -114,19 +123,19 @@ def registration(request):
         'registration.html',
         {'form': form}
     )
-     
+
 
 # here admin try to register a user with the role
 def admin_user_registration(request):
-    
+
     #getting all pending demande d achat  for the admin and count them:
     dossier=DossierAchat.objects.filter(verification ="pending...")
     count=dossier.count()
-    
-    #get all new booking car demande:    
+
+    #get all new booking car demande:
     booking_pending = DossierLocation.objects.filter(status="encours")
     count_booking_pending=booking_pending.count()
-    
+
     if request.method == 'POST':
         form = admin_register_userForm(request.POST)
         if form.is_valid():
@@ -137,15 +146,15 @@ def admin_user_registration(request):
             messages.success(request,"Vous venez d'ajouter un utilisateur avec succès")
     else:
         form = admin_register_userForm()
-        
+
     context={
         'form': form,
         'count': count,
         'dossier':dossier,
         'booking_pending':booking_pending,
         'count_booking_pending':count_booking_pending,
-    }    
-    return render(request, 'administration/add_user.html', context)  
+    }
+    return render(request, 'administration/add_user.html', context)
 
 #admin delete all user:
 def delete_all_user(request):
@@ -155,11 +164,11 @@ def delete_all_user(request):
 
 #login view
 def login_view(request):
-    
+
     # Create an instance of the form
     form = LoginForm(request.POST or None)
     error = None
-    
+
     if request.method == 'POST' and form.is_valid():
         email = form.cleaned_data['email']
         password = form.cleaned_data['password']
@@ -187,7 +196,7 @@ def login_view(request):
                 error = "Email or password is incorrect"
 
     return render(request, 'login.html', {'form': form, 'error': error})
-    
+
 #logout view
 def logout_view(request):
     logout(request)
@@ -211,29 +220,29 @@ def failed_registration(request):
 
 #user profile view
 def user_profil(request):
-   
-    # get the current user:   
+
+    # get the current user:
     user= User.objects.filter(id=request.user.id).first()
-    
+
     #notification for user check if the user dossier to buy a car has been accepted: he has to sign the contract
     notification=DossierAchat.objects.filter(client=request.user,verification__in=['accepté','rejeté'],mysignature='not yet')
     count_notification=notification.count()
-           
+
     #getting all location or booking notification for the user:
     notification_location=DossierLocation.objects.filter(client=request.user,status__in=['accepté','rejeté'],mysignature='not yet')
     count_notification_location=notification_location.count()
-    
+
     #taking all request achat de dossier pour cet utilisateur:
     dossiers=DossierAchat.objects.filter(client=user)
     count_dossier=dossiers.count()
-    
+
     #taking the request booking for this user:
     bookings=DossierLocation.objects.filter(client=user).count()
     #ici on check if one of your dossier is accepted and you have to signe the contract of buying
     #to make appear the notification sign for the user:
     notification=DossierAchat.objects.filter(client=request.user,verification ='accepté',mysignature='not yet')
     count_notification=notification.count()
-    
+
     context={
        'user':user,
        'dossiers':dossiers,
@@ -249,14 +258,14 @@ def user_profil(request):
 # user information
 @login_required
 def user_info(request):
-   
+
     user= User.objects.filter(id=request.user.id).first()
-    
+
     #ici on check if one of your dossier is accepted and you have to signe the contract of buying
     #to make appear the notification sign for the user:
     notification=DossierAchat.objects.filter(client=request.user,verification ='accepté',mysignature='not yet')
     count_notification=notification.count()
-    
+
     context={
        'user':user,
        'notification':notification,
@@ -267,18 +276,18 @@ def user_info(request):
 # getting user all request achat
 @login_required
 def user_all_request(request):
-   
-    # on recupere l utilisateur connecté:   
+
+    # on recupere l utilisateur connecté:
     user= User.objects.filter(id=request.user.id).first()
-    
+
     #taking all request de dossier pour cet utilisateur order by descending:
     contract=DossierAchat.objects.filter(client=user).order_by('-id')
-    
+
     #ici on check if one of your dossier is accepted and you have to signe the contract of buying
     #to make appear the notification sign for the user:
     notification=DossierAchat.objects.filter(client=request.user,verification ='accepté',mysignature='not yet')
     count_notification=notification.count()
-    
+
     context={
        'user':user,
        'notification':notification,
@@ -296,13 +305,13 @@ def user_delete_request_achat(request,id):
 
 @login_required
 def user_location_request(request):
-   
-    # on recupere l utilisateur connecté:   
+
+    # on recupere l utilisateur connecté:
     user= request.user
-    
+
     #taking all location request de dossier pour cet utilisateur:
     contract=DossierLocation.objects.filter(client=user).order_by('-id')
-    
+
     # am looping to get each days of booking and the price:
     for demande in contract:
 
@@ -314,17 +323,17 @@ def user_location_request(request):
 
         demande.days = days
         demande.total = price * days
-    
+
     #ici on check if one of your dossier is accepted and you have to signe the contract of buying
     #to make appear the notification sign for the user for achat:
     notification=DossierAchat.objects.filter(client=request.user,verification ='accepté',mysignature='not yet')
     count_notification=notification.count()
-    
+
     #notification for location to sign if the demande is accepted:
     notification_location=DossierLocation.objects.filter(client=user,status ='accepté',mysignature='not yet')
     count_notification_location=notification.count()
-    
-    
+
+
     context={
        'user':user,
        'notification':notification,
@@ -345,10 +354,10 @@ def user_delete_location_request(request,id):
 #change password view with the django built-in PasswordChangeForm
 @login_required
 def change_password(request):
-    
+
     if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST)
-        
+
         if form.is_valid():
             user = form.save()
 
@@ -362,7 +371,7 @@ def change_password(request):
     return render(request, "profil/change_password.html", {
         "form": form
     })
-    
+
 @login_required
 def info_modification(request):
     user = request.user
@@ -375,9 +384,9 @@ def info_modification(request):
     else:
         form = InfoModificationForm(instance=user)
 
-    return render(request, 'profil/info_modification.html', {'form': form}) 
+    return render(request, 'profil/info_modification.html', {'form': form})
 
-#forgotten password view password oublié 
+#forgotten password view password oublié
 def password_reset_request(request):
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
@@ -412,14 +421,14 @@ def password_reset_request(request):
 
     form = PasswordResetForm()
     return render(
-        request=request, 
-        template_name="form_forgotten_password.html", 
+        request=request,
+        template_name="form_forgotten_password.html",
         context={"form": form}
         )
 # sent mail success to reset the password for the forgotten password view
 def sent_mail_reset_password(request):
-    return render(request, 'sent_mail_reset_password.html')    
-    
+    return render(request, 'sent_mail_reset_password.html')
+
 # confirm the password reset link sent to email to click and reset password
 def password_reset_confirm(request, uidb64, token):
     User = get_user_model()
@@ -452,7 +461,6 @@ def password_reset_confirm(request, uidb64, token):
         "change_forgotten_password.html",
         {"form": form},
     )
-    
- 
-    
-    
+
+
+

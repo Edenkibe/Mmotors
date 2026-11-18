@@ -1,11 +1,12 @@
 import os
-
-from django.conf import settings
-from django.template.loader import render_to_string
-from weasyprint import HTML
-from django.core.files.base import ContentFile
 from datetime import datetime
 from pathlib import Path
+
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.template.loader import render_to_string
+from weasyprint import HTML
+
 
 def invoice(demandes):
 
@@ -42,7 +43,7 @@ def invoice(demandes):
         ContentFile(pdf),
         save=True,
     )
-    
+
 def invoice_location(demandes,payer,days):
 
     image_path = os.path.join(
@@ -79,4 +80,4 @@ def invoice_location(demandes,payer,days):
         filename,
         ContentFile(pdf),
         save=True,
-    )    
+    )

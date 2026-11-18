@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser, PermissionsMixin, UserManager
-from django.contrib.auth.base_user import BaseUserManager
+from django.db import models
+
 
 # Create your models here.
 class User(AbstractUser,PermissionsMixin):
@@ -11,15 +11,15 @@ class User(AbstractUser,PermissionsMixin):
             ('promoteur', 'promoteur'),
             ('secretaire', 'secretaire'),
         ]
-    role=models.CharField(
-            max_length=20,
-            choices=role_choise,
-            blank=True,
-            null=True
-        )
+    role = models.CharField(
+    max_length=20,
+    choices=role_choise,
+    blank=True,
+    default=""
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    
+
 
     objects = UserManager()
 
@@ -28,5 +28,5 @@ class User(AbstractUser,PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
-   
+
+

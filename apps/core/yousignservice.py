@@ -1,15 +1,13 @@
 import logging
+import os
+from datetime import datetime
+from pathlib import Path
 
 import requests
 from django.conf import settings
-from django.http import JsonResponse
-import json
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from datetime import datetime
-from pathlib import Path
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +61,7 @@ class YousignClient:
 
     #generation de contrat avec weazy print for achat and location type
     def generate_contract(self, demande, contract_type):
-    
+
         image_path = os.path.join(
             settings.BASE_DIR,
             'static',
@@ -144,8 +142,8 @@ class YousignClient:
         )
 
         return response.json()
-    
-    
+
+
     #upload document to yousign:
     def upload_document(self, signature_request_id, file_path):
 
@@ -207,7 +205,7 @@ class YousignClient:
                 }
             ]
         }
-        
+
         print("ADD SIGNER URL:", url)
         print("ADD SIGNER PAYLOAD:", payload)
         response = self._request("post", url, json=payload)
@@ -216,16 +214,16 @@ class YousignClient:
         print("ADD SIGNER BODY:", response.text)
         return response.json()
 
- 
-    #to activate the document and the user will receive the email automatically to yousign    
+
+    #to activate the document and the user will receive the email automatically to yousign
     def activate(self, signature_request_id):
         response = self._request(
             "post",
             f"{self.base_url}/signature_requests/{signature_request_id}/activate",
         )
         return response.json()
-      
-    
+
+
     #download the pdf signed
     def download_signed_document(self,signature_request_id):
         response = self._request(
@@ -233,5 +231,4 @@ class YousignClient:
            f"{self.base_url}/signature_requests/{signature_request_id}/documents/download"
         )
 
-        return response.content    
-     
+        return response.content

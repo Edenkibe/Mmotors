@@ -1,15 +1,12 @@
 
-from django.test import TestCase
-from django.urls import reverse
-from django.contrib.auth.models import User
-from django.test import Client
 from django.contrib.auth import get_user_model
-
-User = get_user_model()
-from unittest.mock import patch
+from django.test import Client, TestCase
+from django.urls import reverse
 
 from apps.location.models import DossierLocation
 from apps.voiture.models import Voiture
+
+User = get_user_model()
 
 class CreerDossierLocationTest(TestCase):
 
@@ -19,17 +16,17 @@ class CreerDossierLocationTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
-        
+
         self.client = Client()
-        
+
         # Connexion forcée de l'utilisateur avec force_login pour simuler un utilisateur connecté
         self.client.force_login(self.user)
 
         self.voiture = Voiture.objects.create(
-        # Créer une voiture disponible pour l'achat                 
+        # Créer une voiture disponible pour l'achat
             marque="Toyota",
             type="Achat",
-            disponibilite="Visible",          
+            disponibilite="Visible",
             modele="Corolla",
             annee=2020,
             prix=20000,
@@ -38,7 +35,7 @@ class CreerDossierLocationTest(TestCase):
             kilometre=50000,
             etat="Bon",
             description="Voiture en parfait état"
-                   
+
         )
 
         self.url = reverse(
@@ -132,7 +129,7 @@ class CreerDossierLocationTest(TestCase):
             lieu_retour="Lieu de restitution",
             autre_lieu_depart="Adresse personnalisée du départ",
             autre_lieu_retour="Adresse personnalisée du retour",
-            
+
             # Ajoute les autres champs obligatoires
         )
 
@@ -203,6 +200,6 @@ class CreerDossierLocationTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
-        
-        
+
+
 

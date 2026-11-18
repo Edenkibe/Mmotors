@@ -2,10 +2,11 @@ from django import forms
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
+
 class LoginForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
-        
+        super().__init__(*args, **kwargs)
+
     email = forms.EmailField(widget=forms.EmailInput(attrs={
         'class': 'form-control rounded-left',
         'placeholder': 'Email'
@@ -16,4 +17,4 @@ class LoginForm(forms.Form):
         'type': 'password',
         'placeholder': 'Mot de passe'
     }))
-    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox()) 
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())

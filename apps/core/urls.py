@@ -1,6 +1,8 @@
 
 from django.urls import path
+
 from . import views
+
 app_name='core'
 urlpatterns = [
     path('', views.home_page, name='home'),
@@ -24,5 +26,5 @@ urlpatterns = [
     path('search_action',views.search_action, name='search_action'),
     path('contact_client/<int:id>/',views.contact_client, name='contact_client'),
     path('admin_delete_demande_achat/<int:id>/', views.admin_delete_demande_achat, name='admin_delete_demande_achat'),
-    
-]   
+
+]

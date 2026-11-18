@@ -1,35 +1,34 @@
-from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from apps.dossiers.models import DossierAchat
-from apps.location.models import DossierLocation
-from apps.core.yousignservice import YousignClient
-from django.core.files.base import ContentFile
+import hashlib
+import hmac
 import json
 import logging
-from apps.voiture.service import invoice,invoice_location
-from django.http import HttpResponse
-from django.conf import settings
-import stripe
-from django.db import transaction
-from django.utils import timezone
-from apps.location.models import payementLocation
-stripe.api_key = settings.STRIPE_SECRET_KEY
 from decimal import Decimal
-import hmac
-import hashlib
-import json
+
+import stripe
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.db import transaction
+from django.http import HttpResponse, JsonResponse
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+
+from apps.core.yousignservice import YousignClient
+from apps.dossiers.models import DossierAchat
+from apps.location.models import DossierLocation, payementLocation
+from apps.voiture.service import invoice, invoice_location
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
 
 #webhook yousigh  for achat and location together we are combining both in one webhook:
 @csrf_exempt
 def yousign_webhook(request):
-    
+
     print(" YOUSIGN WEBHOOK ENTERED ", flush=True)
 
     logger.info("YOUSIGN WEBHOOK ENTERED ")
 
- 
+
     if request.method != "POST":
         return JsonResponse(
             {"error": "Method not allowed"},
@@ -122,7 +121,7 @@ def yousign_webhook(request):
             )
 
         client = YousignClient()
-     
+
         # ACHAT:
         if external_id.startswith("achat-"):
 
@@ -167,7 +166,7 @@ def yousign_webhook(request):
             )
 
 
-       
+
         # LOCATION:
         elif external_id.startswith("location-"):
 
@@ -254,9 +253,9 @@ def yousign_webhook(request):
             {"error": str(e)},
             status=500
         )
-        
-        
-        
+
+
+
 # strpe webhook for location and achat:
 @csrf_exempt
 def stripe_webhook(request):
@@ -290,11 +289,11 @@ def stripe_webhook(request):
         payment_type = metadata["type"]
 
         print(payment_type)
-        
+
         if session["currency"] != "eur":
             return HttpResponse(status=400)
-  
-        # ACHAT    
+
+        # ACHAT
         if payment_type == "achat":
 
             achat_id = metadata["achat_id"]
@@ -332,7 +331,7 @@ def stripe_webhook(request):
                     achat_dossier.stripe_session_id = session.id
                     achat_dossier.stripe_payment_intent = session.payment_intent
                     achat_dossier.stripe_customer_id = session.customer
-                    achat_dossier.paid_amount = Decimal(session.amount_total) / Decimal("100")
+                    achat_dossier.paid_amount = Decimal(session.amount_total) / Decimal(100)
                     achat_dossier.paid_currency = session.currency
                     achat_dossier.paid_at = timezone.now()
 
@@ -359,7 +358,7 @@ def stripe_webhook(request):
                 location_dossier = DossierLocation.objects.get(
                     id=location_id
                 )
-                
+
 
             except DossierLocation.DoesNotExist:
                 return HttpResponse(
@@ -371,7 +370,7 @@ def stripe_webhook(request):
                 location_dossier.date_retour
                 - location_dossier.date_depart
             ).days
-             
+
             payer= location_dossier.vehicule.prix * days
             expected_amount = int(
                 location_dossier.vehicule.prix * days * 100
@@ -398,15 +397,15 @@ def stripe_webhook(request):
                     defaults={
                         "stripe_session_id": session.id,
                         "stripe_payment_intent": session.payment_intent,
-                        "stripe_customer_id": session.customer,                      
-                        "paid_amount":Decimal(session.amount_total) / Decimal("100"),
+                        "stripe_customer_id": session.customer,
+                        "paid_amount":Decimal(session.amount_total) / Decimal(100),
                         "paid_currency": session.currency,
                         "paid": True,
                     }
                 )
             if created :
-                invoice_location(location_dossier,payer,days)    
-              
+                invoice_location(location_dossier,payer,days)
+
         else:
 
             return HttpResponse(

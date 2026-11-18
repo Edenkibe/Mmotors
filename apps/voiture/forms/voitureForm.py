@@ -1,6 +1,6 @@
-from django.forms import inlineformset_factory
-from apps.voiture.models import Photo, Voiture
 from django import forms
+
+from apps.voiture.models import Photo, Voiture
 
 
 class VoitureForm(forms.ModelForm):
@@ -107,9 +107,9 @@ class VoitureForm(forms.ModelForm):
             raise forms.ValidationError("Le kilométrage ne peut pas être négatif.")
 
         return km
-    
-    
-    
+
+
+
 class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
@@ -121,7 +121,7 @@ class PhotoForm(forms.ModelForm):
             "image": forms.FileInput(attrs={
                 "class": "form-control"
             }),
-            
+
             'is_main': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
@@ -131,13 +131,13 @@ class PhotoForm(forms.ModelForm):
             'image': 'Photo',
             'is_main': 'Photo principale',
         }
-    
+
 class typeForm(forms.ModelForm):
     class Meta:
         model = Voiture
         fields = [
             "prix",
-            "type",           
+            "type",
         ]
 
         widgets = {
@@ -149,11 +149,10 @@ class typeForm(forms.ModelForm):
             "type": forms.Select(attrs={
                  "class": "form-select"
             }),
-           
+
         }
 
         labels = {
             "prix": "Prix (€)",
             "type": "Type de transaction",
         }
-    

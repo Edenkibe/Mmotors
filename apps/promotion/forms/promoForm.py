@@ -1,6 +1,6 @@
-from django.forms import inlineformset_factory
-from apps.promotion.models import Promotion
 from django import forms
+
+from apps.promotion.models import Promotion
 
 
 class promotionForm(forms.ModelForm):
@@ -34,7 +34,7 @@ class promotionForm(forms.ModelForm):
                 'class': 'form-control',
                 'type': 'datetime-local'
             }),
-            
+
         }
 
         labels = {
@@ -77,7 +77,7 @@ class Promo_modificationForm(forms.ModelForm):
                 'class': 'form-control',
                 'type': 'datetime-local'
             }),
-            
+
             "disponibilite": forms.Select(attrs={
                 "class": "form-select"
             }),
@@ -90,4 +90,3 @@ class Promo_modificationForm(forms.ModelForm):
             "end_date": "end_date",
             "disponibilite": "disponibilite",
         }
-   
