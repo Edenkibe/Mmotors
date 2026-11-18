@@ -407,10 +407,8 @@ class RepondreTest(TestCase):
         )
 
         response = self.client.get(url)
-
         self.assertEqual(response.status_code, 404)
 
-   
     # 3. Vérifier une réponse sans acceptation
     def test_repondre_demande_refusee(self):
         response = self.client.post(

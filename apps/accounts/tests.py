@@ -2,10 +2,12 @@ from unittest.mock import patch
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.shortcuts import redirect
 from django.test import TestCase
 from django.urls import reverse
-from django.shortcuts import redirect
+
 from apps.accounts.forms.loginForm import LoginForm
+
 User = get_user_model()
 
 class RegistrationTestCase(TestCase):
