@@ -1,19 +1,15 @@
 
-from django.test import TestCase
-from django.test import TestCase, Client
-from django.template.response import TemplateResponse
-from django.urls import reverse
-from django.contrib.auth import get_user_model
-User = get_user_model()
-from apps.dossiers.models import DossierAchat
-from django.contrib.auth import get_user_model
-from apps.voiture.models import Voiture
-from django.contrib.messages import get_messages
-from apps.voiture.forms.voitureForm import typeForm
-from apps.dossiers.form.reply_demandeForm import ReplydossierForm
-from django.core.files.uploadedfile import SimpleUploadedFile
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
+from django.contrib.messages import get_messages
+from django.test import Client, TestCase
+from django.urls import reverse
+
+from apps.dossiers.form.reply_demandeForm import ReplydossierForm
+from apps.dossiers.models import DossierAchat
+from apps.voiture.forms.voitureForm import typeForm
+from apps.voiture.models import Voiture
 
 User = get_user_model()
 
@@ -30,16 +26,16 @@ class SearchActionTest(TestCase):
                 first_name="Jean",
                 last_name="Dupont"
             )
-           
-            self.client = Client()      
+
+            self.client = Client()
             # Connexion forcée de l'utilisateur avec force_login pour simuler un utilisateur connecté
             self.client.force_login(self.user)
-           
+
              # Créer une voiture disponible pour l'achat
             self.car1 = Voiture.objects.create(
                 marque="Toyota",
                 type="Achat",
-                disponibilite="Visible",          
+                disponibilite="Visible",
                 modele="Corolla",
                 annee=2020,
                 prix=20000,
@@ -49,7 +45,7 @@ class SearchActionTest(TestCase):
                 etat="Bon",
                 description="Voiture en parfait état"
             )
-            
+
                     # Créer une voiture non visible pour achat
             self.car2 = Voiture.objects.create(
                 marque="BMW",
@@ -64,7 +60,7 @@ class SearchActionTest(TestCase):
                 etat="Bon",
                 description="Voiture en excellent état"
             )
-    
+
             self.dossier1 = DossierAchat.objects.create(
                 code_dossier="DOSSIER001",
                 nom_complet="Pierre Martin",
@@ -77,7 +73,7 @@ class SearchActionTest(TestCase):
                 deal="acheté",
                 read="non lu"
             )
-    
+
             self.dossier2 = DossierAchat.objects.create(
                 code_dossier="DOSSIER002",
                 nom_complet="Jean Dupont",
@@ -90,7 +86,7 @@ class SearchActionTest(TestCase):
                 deal="acheté",
                 read="non lu"
             )
-    
+
             self.dossier3 = DossierAchat.objects.create(
                 code_dossier="ABC123",
                 nom_complet="Marie Curie",
@@ -103,7 +99,7 @@ class SearchActionTest(TestCase):
                 deal="disponible",
                 read="lu"
             )
-    
+
             self.url = reverse("dossiers:search_dossier")
 
     def test_search_empty_query(self):
@@ -179,7 +175,7 @@ class SearchActionTest(TestCase):
         )
 
         self.assertTemplateUsed(response, "ajax/action_ajax.html")
-        
+
 
 #test la fonction de basculer la voiture de type achat vers location et vice versa
 class BasculerTypeTest(TestCase):
@@ -334,7 +330,7 @@ class BasculerTypeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.car1.type, ancien_type)
 
-        
+
 
 #test pour la function de repondre a une demande achat d'un client dans la page d'administration:
 class RepondreTest(TestCase):
@@ -350,7 +346,7 @@ class RepondreTest(TestCase):
         self.car = Voiture.objects.create(
            marque="Toyota",
            type="Achat",
-           disponibilite="Visible",          
+           disponibilite="Visible",
            modele="Corolla",
            annee=2020,
            prix=20000,
@@ -414,6 +410,7 @@ class RepondreTest(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+   
     # 3. Vérifier une réponse sans acceptation
     def test_repondre_demande_refusee(self):
         response = self.client.post(
@@ -426,7 +423,12 @@ class RepondreTest(TestCase):
         print("URL:", response.redirect_chain)
 
         if response.context:
-            print("Form errors:", response.context["form"].errors)
+            form = response.context.get("form")
+
+            if form:
+                print("Form errors:", form.errors)
+            else:
+                print("Aucun formulaire dans le contexte.")
 
         self.dossier.refresh_from_db()
 

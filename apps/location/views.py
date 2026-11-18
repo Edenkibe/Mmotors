@@ -1,23 +1,25 @@
-from django.shortcuts import get_object_or_404, redirect, render
-from apps.location.forms.LocationForm import DossierLocationForm 
-from apps.location.forms.repondre_locationForm import Reply_locatioForm
-from .models import DossierLocation
-from apps.dossiers.models import DossierAchat
-from apps.voiture.models import Voiture
-from apps.core.yousignservice import YousignClient
-from django.contrib import messages
 import logging
-from django.db.models import Q
-logger = logging.getLogger(__name__)
-from apps.location.models import payementLocation
-from django.views.decorators.csrf import csrf_exempt
-import stripe
-from django.http import HttpResponse
 from decimal import Decimal
-from django.db import transaction
+
+import stripe
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from apps.core.yousignservice import YousignClient
+from apps.dossiers.models import DossierAchat
+from apps.location.forms.LocationForm import DossierLocationForm
+from apps.location.forms.repondre_locationForm import Reply_locatioForm
+from apps.location.models import payementLocation
+from apps.voiture.models import Voiture
+
+from .models import DossierLocation
+
+logger = logging.getLogger(__name__)
 
 def creer_dossier_location(request, id):
     voiture = get_object_or_404(Voiture, id=id)
@@ -42,7 +44,7 @@ def creer_dossier_location(request, id):
             days = (date_retour - date_depart).days
             if days <= 0:
                 return render(request, "faile_request_location.html",{'voiture': voiture}, status=400)
-            
+
             dossier = form.save(commit=False)
             dossier.client = request.user
             dossier.vehicule = voiture
@@ -54,24 +56,24 @@ def creer_dossier_location(request, id):
         form = DossierLocationForm()
     context ={"form": form,"voiture": voiture,'dossier_exist': dossier_exist,'count': count}
     return render(request, "depot_location.html", context)
- 
+
 #admin delete a user demande de location:
 @login_required
 @require_POST
 def admin_delete_location_request(request, id):
     demande=get_object_or_404(DossierLocation, id=id)
     demande.delete()
-    return redirect ('locations:get_demande_location')  
-  
-#recuperer la voiture pour la location: demander a l'utilisateur si il est d accord avec le prix de la location et le nombre de jours de location: 
+    return redirect ('locations:get_demande_location')
+
+#recuperer la voiture pour la location: demander a l'utilisateur si il est d accord avec le prix de la location et le nombre de jours de location:
 def user_satisfaction_location(request, id):
-    
-    dossier = get_object_or_404(DossierLocation, id=id, client=request.user) 
+
+    dossier = get_object_or_404(DossierLocation, id=id, client=request.user)
     days = (dossier.date_retour - dossier.date_depart).days
-    
-    # la datte de retour doit être après la date de début, sinon on retourne une erreur: pour 1 jour 
-    
-    total_price = dossier.vehicule.prix * days 
+
+    # la datte de retour doit être après la date de début, sinon on retourne une erreur: pour 1 jour
+
+    total_price = dossier.vehicule.prix * days
     context={
         'dossier': dossier,
         'days': days,
@@ -81,65 +83,62 @@ def user_satisfaction_location(request, id):
 
 # effacer le dossier location si l'utilisateur n'est pas satisfait du prix de la location ou du nombre de jours de location:
 def user_not_satisfied_location(request, id):
-    dossier = get_object_or_404(DossierLocation, id=id, client=request.user) 
+    dossier = get_object_or_404(DossierLocation, id=id, client=request.user)
     dossier.delete()
     return redirect("locations:unsuccess_location")
 
 
 def unsuccess_location(request):
-    return render(request, "unsuccess_location.html") 
+    return render(request, "unsuccess_location.html")
 
 
 # success de location: when the user submit the form of location we redirect him to this page:
 def success_location(request):
-    return render(request, "success_location.html")  
+    return render(request, "success_location.html")
 
 # view rejected booking in notification:user action
 def rejected_location(request, id):
-    
-    
+
+
     #fetch the notification for the user  for the accepted or rejected demand in book mode:
-    
+
     notification=DossierLocation.objects.filter(client=request.user,status__in=['accepté','rejeté'],mysignature='not yet')
     count_notification=notification.count()
     #getting the demandes:
     demande=get_object_or_404(DossierLocation,id=id,status='rejeté',mysignature='not yet')
-    
+
     #when we click on this page we have to remove the notification by changing msignaturer not yet to signé:
     demande.mysignature="signé"
     demande.save()
-    
+
     context={
         'demande':demande,
         'notification':notification,
         'count_notification': count_notification
     }
-    return render(request,'rejected_location.html',context)  
+    return render(request,'rejected_location.html',context)
 
 
 #admin getting all demand booking on the dashboard
 def get_demande_location(request):
-    
+
     # all achat demande pending for the admin:
     dossier=DossierAchat.objects.filter(verification ="pending...")
     count=dossier.count()
-    
+
     #getting all pending demande  location for the admin and count them:
     dossier_location=DossierLocation.objects.filter(status ="encours")
     count_location=dossier_location.count()
-    
+
     #count all demande booking in the system:
     all_demandes=DossierLocation.objects.all().order_by('-id')
     count_all_demandes=all_demandes.count()
-    
+
     #all  demande en location in the system:ou en location running:
     all_sold=DossierLocation.objects.filter(status="en location")
     count_all_sold=all_sold.count()
-    
-    #get all booking car:    
-    booking_pending = DossierLocation.objects.filter(status="encours")
-    count_booking_pending=booking_pending.count()
-    
+
+
     context={
         'dossier':dossier,
         'count':count,
@@ -155,7 +154,7 @@ def get_demande_location(request):
 #the admin search location demande by it unique code::
 def search_location(request):
     query = request.GET.get("q", "").strip()
-    
+
     #si la barre est vide on retourne tout le user
     if query == "":
         dossier_user = DossierLocation.objects.filter().all()
@@ -185,20 +184,20 @@ def search_location(request):
 
 #repondre a une demande de location:
 def repondre_location(request,id):
-    
+
     #getting all pending demande d achat et location for the admin and count them:
     dossier=DossierAchat.objects.filter(verification ="pending...")
     count=dossier.count()
-    
-    #get all booking car en pendind de validation:    
+
+    #get all booking car en pendind de validation:
     booking_pending = DossierLocation.objects.filter(status="encours")
     count_booking_pending=booking_pending.count()
-        
+
     #admin is getting  a demande to reply to it:
     demandes=get_object_or_404(DossierLocation,id=id)
-    
+
     if request.method == "POST":
-        
+
         # Keep the status BEFORE saving the form
         old_status = demandes.status
 
@@ -294,18 +293,18 @@ def repondre_location(request,id):
                             request,
                             "Vous venez de répondre à une demande cliente."
                         )
-                        
+
                     # if the status new equal to rejeté do something:
             except Exception:
                 logger.exception("Yousign failed")
-            
+
                 messages.error(
                     request,
                     "Erreur lors de la création du contrat Yousign"
                 )
-                            
-            return redirect("locations:redirect_after_responding")  
-             
+
+            return redirect("locations:redirect_after_responding")
+
         #If form is invalid, the page will be rendered again
 
     else:
@@ -330,27 +329,23 @@ def repondre_location(request,id):
 
 #redirect the admin after responding to a location demande:
 def redirect_after_responding(request):
-    
+
     # all achat demande pending for the admin:
     dossier=DossierAchat.objects.filter(verification ="pending...")
     count=dossier.count()
-    
+
     #getting all pending demande  location for the admin and count them:
     dossier_location=DossierLocation.objects.filter(status ="encours")
     count_location=dossier_location.count()
-    
+
     #count all demande booking in the system:
     all_demandes=DossierLocation.objects.all().order_by('-id')
     count_all_demandes=all_demandes.count()
-    
+
     #all  demande en location in the system:ou en location running:
     all_sold=DossierLocation.objects.filter(status="en location")
     count_all_sold=all_sold.count()
-    
-    #get all booking car:    
-    booking_pending = DossierLocation.objects.filter(status="encours")
-    count_booking_pending=booking_pending.count()
-    
+
     context={
         'dossier':dossier,
         'count':count,
@@ -371,22 +366,22 @@ def location_car(request, id):
         id=id,
         client=request.user
     )
-    
+
     # here i calculate the days of booking like:3 days of booking:
     days = (
     location_dossier.date_retour - location_dossier.date_depart
     ).days
-     
-    # if the date is less than zero: 
+
+    # if the date is less than zero:
     if days <= 0:
       return HttpResponse(
         "Invalid rental dates.",
         status=400
     )
-    
+
     # get the total days of booking:
     total_price = location_dossier.vehicule.prix * days
-      
+
     # Check if the car is already rented
     if location_dossier.deal == "en location":
         return HttpResponse(
@@ -447,7 +442,7 @@ def location_car(request, id):
     )
 
     # Save Stripe session ID
-    location_payment = payementLocation.objects.create(
+    payementLocation.objects.create(
     location=location_dossier,
     stripe_session_id=session.id,
 )
@@ -457,19 +452,19 @@ def location_car(request, id):
 
 # here the user check the raison why the demand is rejected or accepted in Achat mode:
 def check_raison_booking(request, id):
-       
+
     notification=DossierAchat.objects.filter(client=request.user,verification__in=['accepté','rejeté'],mysignature='not yet')
     count_notification=notification.count()
-    
+
     #getting the demandes location:
     demande=get_object_or_404(DossierLocation,id=id,status__in=['rejeté','accepté'],mysignature='signé')
-    
+
     context={
         'demande':demande,
         'notification':notification,
         'count_notification': count_notification
     }
-    return render(request,'check_raison_booking.html',context) 
+    return render(request,'check_raison_booking.html',context)
 
 
 #the user search location demande by it unique code::
@@ -556,7 +551,7 @@ def user_search_achat(request):
         "user_search_achat_ajax.html",
         context
     )
-    
+
 # get booking encours live:
 def live_booking(request):
     # Get all ongoing bookings
@@ -580,9 +575,9 @@ def live_booking(request):
         request,
         "administration/live_booking.html",
         context
-    )  
-    
-    
+    )
+
+
 #the user search location demande by it unique code::
 def admin_search_ongoing_bookings(request):
     query = request.GET.get("q", "").strip()
@@ -627,4 +622,4 @@ def admin_search_ongoing_bookings(request):
         "administration/ajax/live_ajax.html",
         context
     )
-      
+

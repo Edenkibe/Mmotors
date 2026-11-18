@@ -1,7 +1,8 @@
+
 from django import forms
+
 from ..models import User
-from django.core.exceptions import ValidationError
-import re
+
 
 class ChangePasswordForm(forms.ModelForm):
     class Meta:
@@ -25,4 +26,3 @@ class ChangePasswordForm(forms.ModelForm):
         'id': 'myInput',
         'placeholder': 'Confirmer le mot de passe'
     }))
-   

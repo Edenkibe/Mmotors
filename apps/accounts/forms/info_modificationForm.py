@@ -1,7 +1,10 @@
-from django import forms
-from ..models import User
-from django.core.exceptions import ValidationError
 import re
+
+from django import forms
+from django.core.exceptions import ValidationError
+
+from ..models import User
+
 
 class InfoModificationForm(forms.ModelForm):
     class Meta:
@@ -36,7 +39,7 @@ class InfoModificationForm(forms.ModelForm):
                 "First name must be 3-20 characters long and contain only letters, numbers, or underscores and space."
             )
         return first_name
-    
+
     def clean_last_name(self):
         last_name = self.cleaned_data['last_name']
         if not re.match(r'^[A-Za-z0-9_ ]{3,20}+$', last_name):
@@ -44,4 +47,4 @@ class InfoModificationForm(forms.ModelForm):
                 "Last name must be 3-20 characters long and contain only letters, numbers, or underscores and space."
             )
         return last_name
-    
+

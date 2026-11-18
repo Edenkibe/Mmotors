@@ -1,6 +1,8 @@
-from django.db import models
 from datetime import timedelta
+
+from django.db import models
 from django.utils import timezone
+
 
 # Create your models here.
 class Voiture(models.Model):
@@ -61,12 +63,12 @@ class Voiture(models.Model):
 
     def __str__(self):
         return self.marque + " " + self.modele
-    
+
     #pour ciblé la photo principale sur l annonce
     def main_photo(self):
         return self.photos.filter(is_main=True).first()
 
-    #to get the time ago of voiture added 
+    #to get the time ago of voiture added
     @property
     def since_created(self):
         """
@@ -92,22 +94,22 @@ class Voiture(models.Model):
         else:
             years = int(diff.days / 365)
             return f"il y a {years} an{'s' if years > 1 else ''}"
-        
+
 
 class Photo(models.Model):
     voiture = models.ForeignKey(
         Voiture,
         on_delete=models.CASCADE,
-        related_name="photos" 
+        related_name="photos"
     )
     image = models.ImageField(upload_to="voitures/")
     date_added = models.DateTimeField(auto_now_add=True)
     is_main = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return f"Photo {self.voiture.modele}"
-    
-    
+
+
     #getting the voiture image url to display it in the template
     @property
     def get_picture_url(self):

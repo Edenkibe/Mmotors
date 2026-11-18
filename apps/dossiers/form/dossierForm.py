@@ -1,9 +1,11 @@
-from django import forms
-import re
-from django.core.exceptions import ValidationError
-import uuid
-from apps.dossiers.models import DossierAchat
 import os
+import re
+import uuid
+
+from django import forms
+from django.core.exceptions import ValidationError
+
+from apps.dossiers.models import DossierAchat
 
 
 def child_image_path(instance, filename):
@@ -17,7 +19,7 @@ class DossierAchatForm(forms.ModelForm):
         model = DossierAchat
         fields = ['nom_complet', 'telephone','adresse','email','piece_identite']
 
-    
+
         widgets = {
             "nom_complet": forms.TextInput(attrs={
                 "class": "form-control",
@@ -56,7 +58,7 @@ class DossierAchatForm(forms.ModelForm):
         if not re.match(pattern, nom_complet):
             raise ValidationError("Fullname can only contain letters and spaces and min letter 2.")
         return nom_complet
-    
+
 
     def clean_adresse(self):
         adresse = self.cleaned_data.get('adresse')
@@ -64,21 +66,21 @@ class DossierAchatForm(forms.ModelForm):
         if not re.match(pattern, adresse):
             raise ValidationError("the adresse has to like ex: 12 rue,boire etc")
         return adresse
-    
+
     def clean_email(self):
         email = self.cleaned_data['email']
         # simple regex for email (optional because EmailField already validates)
         if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
             raise ValidationError("Enter a valid email address.")
         return email
-    
+
     def clean_telephone(self):
         telephone = self.cleaned_data.get('telephone')
         pattern = r'^\+?[0-9]{8,15}$'
         if not re.match(pattern, telephone):
             raise ValidationError("your contact number as to be like 06...,+33... or 0033...")
         return telephone
-    
+
     def clean_piece_identite(self):
         piece_identite = self.cleaned_data.get("piece_identite")
 
@@ -109,7 +111,7 @@ class DossierAchatForm(forms.ModelForm):
                     raise ValidationError("Invalid document type.")
 
         return piece_identite
-        
-    
-        
+
+
+
 

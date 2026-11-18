@@ -1,8 +1,10 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from ..models import User
-from django.core.exceptions import ValidationError
 import re
+
+from django import forms
+from django.core.exceptions import ValidationError
+
+from ..models import User
+
 
 class RegisterForm(forms.ModelForm):
     class Meta:
@@ -22,7 +24,7 @@ class RegisterForm(forms.ModelForm):
         'type': 'password',
         'placeholder': 'Mot de passe'
     }))
-   
+
         # Custom validation using regex
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -30,7 +32,7 @@ class RegisterForm(forms.ModelForm):
             raise ValidationError(
                 "Username must be 3-20 characters long and contain only letters, numbers, or underscores. and space"
             )
-        
+
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("This username already exists.")
 
@@ -41,13 +43,13 @@ class RegisterForm(forms.ModelForm):
         # simple regex for email (optional because EmailField already validates)
         if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
             raise ValidationError("Enter a valid email address.")
-        
-    
+
+
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email already exists.")    
-        
+            raise forms.ValidationError("This email already exists.")
+
         return email
-    
+
     def save(self, commit=True):
         user = super().save(commit=False)
 
@@ -58,7 +60,7 @@ class RegisterForm(forms.ModelForm):
             user.save()
 
         return user
-    
+
 class admin_register_userForm(forms.ModelForm):
     class Meta:
         model = User
@@ -89,7 +91,7 @@ class admin_register_userForm(forms.ModelForm):
             raise ValidationError(
                 "Username must be 3-20 characters long and contain only letters, numbers, or underscores. and space"
             )
-        
+
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("This username already exists.")
 
@@ -100,13 +102,13 @@ class admin_register_userForm(forms.ModelForm):
         # simple regex for email (optional because EmailField already validates)
         if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
             raise ValidationError("Enter a valid email address.")
-        
-    
+
+
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email already exists.")    
-        
+            raise forms.ValidationError("This email already exists.")
+
         return email
-    
+
     def save(self, commit=True):
         user = super().save(commit=False)
 
@@ -116,4 +118,4 @@ class admin_register_userForm(forms.ModelForm):
         if commit:
             user.save()
 
-        return user    
+        return user

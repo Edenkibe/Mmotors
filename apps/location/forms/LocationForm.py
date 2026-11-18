@@ -1,27 +1,27 @@
 # forms.py
 from django import forms
 from django.forms import DateTimeInput
+
 from apps.location.models import DossierLocation
 
 
 class DossierLocationForm(forms.ModelForm):
     class Meta:
         model = DossierLocation
-        exclude = (
-            "client",
-            "vehicule",
-            "code_location",
-            "status",
-            "yousign_request_id",
-            "yousign_document_id",
-            "contrat_pdf",
-            "signed_contract_pdf",
-            "date_creation",
-            "deal",
-            "message",
-            "mysignature"
-        )
-
+        fields = [
+            "nom_complet",
+            "telephone",
+            "email",
+            "adresse",
+            "numero_permis",
+            "pays_delivrance_permis",
+            "date_depart",
+            "date_retour",
+            "lieu_depart",
+            "lieu_retour",
+            "autre_lieu_depart",
+            "autre_lieu_retour",
+        ]
         widgets = {
             "nom_complet": forms.TextInput(attrs={
                 "class": "form-control",
@@ -102,8 +102,8 @@ class DossierLocationForm(forms.ModelForm):
         self.fields["date_retour"].input_formats = [
             "%Y-%m-%dT%H:%M"
         ]
-     
-    #il verifie que le client ne peut pas choisir "Autre" sans remplir le champ correspondant:    
+
+    #il verifie que le client ne peut pas choisir "Autre" sans remplir le champ correspondant:
     def clean(self):
         cleaned_data = super().clean()
 
@@ -126,4 +126,3 @@ class DossierLocationForm(forms.ModelForm):
             )
 
         return cleaned_data
-    

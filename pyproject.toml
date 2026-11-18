@@ -1,0 +1,32 @@
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+extend-exclude = [
+    "**/migrations/**",
+    ".venv",
+    "venv",
+    "__pycache__",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "DJ",
+    "UP",
+]
+ignore = [
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/forms.py" = ["RUF012"]
+"**/forms/*.py" = ["RUF012"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

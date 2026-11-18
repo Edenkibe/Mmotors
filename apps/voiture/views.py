@@ -1,24 +1,21 @@
-from django.shortcuts import get_object_or_404, redirect, render
-from django.http import HttpResponse
-from django.db.models import Prefetch,Exists,OuterRef
-from apps.voiture.models import Voiture,Photo
-from apps.location.models import DossierLocation
-from apps.voiture.forms.voitureForm import VoitureForm, PhotoForm
-from apps.dossiers.models import DossierAchat
-from django.db.models import Count
-from django.db.models import Q
-from django.contrib import messages
-from django.conf import settings
-from django.utils import timezone
 import logging
-from apps.voiture.service import invoice
-logger = logging.getLogger(__name__)
 from datetime import date, datetime
-#to save the contract signed in the db:
-from django.views.decorators.csrf import csrf_exempt
+
 import stripe
 from django.conf import settings
-from django.shortcuts import redirect
+from django.contrib import messages
+from django.db.models import Count, Exists, OuterRef, Prefetch, Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+
+from apps.dossiers.models import DossierAchat
+from apps.location.models import DossierLocation
+from apps.voiture.forms.voitureForm import PhotoForm, VoitureForm
+from apps.voiture.models import Photo, Voiture
+
+logger = logging.getLogger(__name__)
+#to save the contract signed in the db:
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -28,7 +25,7 @@ def show_voitures(request):
 
 # fetch all car pour la vente
 def vente_car(request):
-    
+
     #get all the cars from the database: with one main picture for each car for achat:
     cars = Voiture.objects.filter(disponibilite="Visible",type="Achat").annotate(
         #compter le nombre de fois que cette voiture est demandée pour l achat
@@ -46,7 +43,7 @@ def vente_car(request):
         queryset=Photo.objects.filter(is_main=True)#getting the main picture
     )
 )
-    
+
     #ici je veux fetch que le marques de voitures inscrite et esquiver les doublons:
     #Obtenir chaque marque avec le nombre de voitures
     #marques = Voiture.objects.values('marque').distinct() eviter le doublon only
@@ -62,10 +59,10 @@ def vente_car(request):
 #search car only in type achat:
 def search_car_achat(request):
     query = request.GET.get("q", "").strip()
-    
+
     #si la barre est vide on retourne toute les voiture
     if query == "":
-        
+
          results = Voiture.objects.filter(disponibilite="Visible",type="Achat").annotate(
                 #compter le nombre de fois que cette voiture est demandée pour l achat
                 dossier_count=Count("dossiers_voitures"), # name related name of car in achat modele
@@ -87,7 +84,7 @@ def search_car_achat(request):
         filters = (
             Q(marque__icontains=query) |
             Q(modele__icontains=query) |
-            Q(prix__icontains=query) 
+            Q(prix__icontains=query)
         )
 
         results = Voiture.objects.filter(filters,disponibilite="Visible",type="Achat").annotate(
@@ -128,20 +125,20 @@ def search_car_achat(request):
 
 
 # fetch all car pour la location
-def location_car(request):   
+def location_car(request):
     #getting the user connected:
     user_connected=request.user
-    
+
     #get all the cars from the database: with one main picture for each car for achat:
     cars = Voiture.objects.filter(disponibilite="Visible",type="Location").annotate(
-        # how many people are requesting this car dossiers_location_voitures is related name of car in location modele: 
+        # how many people are requesting this car dossiers_location_voitures is related name of car in location modele:
         dossier_count=Count("dossiers_location_voitures"),
         # checking if the car is in the location:
             is_location=Exists(
                 DossierLocation.objects.filter(
                     vehicule=OuterRef("pk"),
                     status__in=["accepté","signé"],
-                    deal="en location"                
+                    deal="en location"
                 )
             )
     ).prefetch_related(
@@ -150,7 +147,7 @@ def location_car(request):
         queryset=Photo.objects.filter(is_main=True)#getting the main picture
     )
 )
-    
+
     #ici je veux fetch que le marques de voitures inscrite et esquiver les doublons:
     #Obtenir chaque marque avec le nombre de voitures
     #marques = Voiture.objects.values('marque').distinct() eviter le doublon only
@@ -160,7 +157,7 @@ def location_car(request):
     .annotate(nombre_voitures=Count("id"))
     .order_by("marque")
 )
-    
+
     context={
        "cars":cars,
        "marques":marques,
@@ -173,18 +170,18 @@ def recherche_voitures(request):
 
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
-    
+
     #here we calculate the date in days to multiply it with the price of the cars:
-    # here i calculate the days of booking like:3 days of booking: we need to convert them to dates: 
+    # here i calculate the days of booking like:3 days of booking: we need to convert them to dates:
     begin_date = datetime.strptime(start_date, "%Y-%m-%d").date()
     finish_date = datetime.strptime(end_date, "%Y-%m-%d").date()
     days = (finish_date - begin_date).days
-    
 
-    # la datte de retour doit être après la date de début, sinon on retourne une erreur: pour 1 jour 
+
+    # la datte de retour doit être après la date de début, sinon on retourne une erreur: pour 1 jour
     if days <= 0:
         return render(request, "faile_request.html", status=400)
-    
+
     cars = Voiture.objects.none()
     erreur = None
     count_cars=0
@@ -194,7 +191,7 @@ def recherche_voitures(request):
         # Conversion des dates
         start_date_obj = date.fromisoformat(start_date)
         end_date_obj = date.fromisoformat(end_date)
-        
+
         # conversion date en frncais ex: 12 aout 2026:
         mois = {
             1: "janvier",
@@ -232,7 +229,7 @@ def recherche_voitures(request):
                 dossiers_location_voitures__date_retour__gt=start_date_obj,
                 dossiers_location_voitures__deal__in=['en location','commencé'],
             ).distinct()
-            
+
             count_cars=cars.count()
 
     context = {
@@ -249,11 +246,11 @@ def recherche_voitures(request):
         "admin_template/search_car_location.html",
         context
     )
-    
+
 #search car only in type location:
 def search_car_location(request):
     query = request.GET.get("q", "").strip()
-    
+
     #si la barre est vide on retourne toute les voiture
     if query == "":
         results = Voiture.objects.filter(disponibilite="Visible",type="Location").prefetch_related(
@@ -297,13 +294,12 @@ def search_car_location(request):
 #integration stripe:
 
 # checkout session to buy a car:
-def buy_car(request, id): 
-    # we did this because multiple users can try to buy the same car: we did vehicule__id=id que: vehicule=id  
+def buy_car(request, id):
+    # we did this because multiple users can try to buy the same car: we did vehicule__id=id que: vehicule=id
     achat_dossier = get_object_or_404(DossierAchat, id=id,client=request.user)
-    amount = float(achat_dossier.vehicule.prix) 
   # Stripe attend le montant en centimes
     amount_cents = int(achat_dossier.vehicule.prix * 100)
-   
+
     if achat_dossier.deal == "acheté":
         return HttpResponse("This car has already been sold.")
 
@@ -323,9 +319,9 @@ def buy_car(request, id):
                 "quantity": 1,
             }
         ],
-        customer_email=request.user.email, 
+        customer_email=request.user.email,
         customer_creation="always",
-       
+
         metadata={
             "type": "achat",
             "achat_id": str(achat_dossier.id),
@@ -337,11 +333,11 @@ def buy_car(request, id):
         success_url=request.build_absolute_uri("/payment-success/"),
         cancel_url=request.build_absolute_uri("/payment-cancel/"),
     )
-    
+
     # am Saving Stripe session ID in the db:
     achat_dossier.stripe_session_id = session.id
     achat_dossier.save()
-    
+
     return redirect(session.url)
 
 # success page:
@@ -354,7 +350,7 @@ def cancel(request):
 
 #admin delete all cars:
 def delete_all_cars(request):
-    Voiture.objects.all().delete() 
+    Voiture.objects.all().delete()
     messages.success(request, "All cars have been deleted successfully.")
     return redirect("core:admin_page")
 
@@ -363,11 +359,11 @@ def add_voiture(request):
     # get all new achat demande with pending...
     demande_pending = DossierAchat.objects.filter(verification="pending...")
     count_pending_demandes=demande_pending.count()
-    
-    #get all new booking car demande:    
+
+    #get all new booking car demande:
     booking_pending = DossierLocation.objects.filter(status="encours")
     count_booking_pending=booking_pending.count()
-    
+
     if request.method == "POST":
         form = VoitureForm(request.POST)
 
@@ -396,15 +392,15 @@ def add_voiture(request):
 # add a photo for a voiture or car for the admin:
 def add_voiture_photo(request,id):
     voiture=get_object_or_404(Voiture, id=id)
-    
+
     # get all new achat demande with pending...
     demande_pending = DossierAchat.objects.filter(verification="pending...")
     count_pending_demandes=demande_pending.count()
-        
-    #get all new booking car demande:    
+
+    #get all new booking car demande:
     booking_pending = DossierLocation.objects.filter(status="encours")
     count_booking_pending=booking_pending.count()
-    
+
     if request.method == "POST":
         form = PhotoForm(request.POST, request.FILES)
 
@@ -420,7 +416,7 @@ def add_voiture_photo(request,id):
             print(form.cleaned_data if form.is_bound else "")
     else:
         form = PhotoForm()
-    
+
     context={
             "form": form,
             'demande_pending':demande_pending,
@@ -430,4 +426,4 @@ def add_voiture_photo(request,id):
             "voiture": voiture
         }
     return render(request, "administration/add_photo_voiture.html",context)
-    
+

@@ -1,14 +1,14 @@
 from datetime import timedelta
-import re
-from django.utils import timezone
-from django.db import models
+
 from django.conf import settings
-from django.forms import ValidationError
+from django.db import models
+from django.utils import timezone
+
 from apps.voiture.models import Voiture
 
 # Create your models here
 
-class Promotion(models.Model):  
+class Promotion(models.Model):
     creator=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True,related_name="user_promotion")
     voiture= models.ForeignKey(
         Voiture,
@@ -32,8 +32,10 @@ class Promotion(models.Model):
     promotion_done_at = models.DateTimeField(null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
-    
-     #to get the time ago of created_at 
+    def __str__(self):
+        return f"Promotion #{self.voiture.id}"
+
+     #to get the time ago of created_at
     @property
     def time_since_created(self):
         """
@@ -58,9 +60,9 @@ class Promotion(models.Model):
             return f"il y a {months} mois"
         else:
             years = int(diff.days / 365)
-            return f"il y a {years} an{'s' if years > 1 else ''}"    
-   
-  #to get the time ago of accepted_at 
+            return f"il y a {years} an{'s' if years > 1 else ''}"
+
+  #to get the time ago of accepted_at
     @property
     def time_since_started(self):
         """
@@ -85,10 +87,10 @@ class Promotion(models.Model):
             return f"il y a {months} mois"
         else:
             years = int(diff.days / 365)
-            return f"il y a {years} an{'s' if years > 1 else ''}"    
-   
-   
-    #to get the time ago of done promotion 
+            return f"il y a {years} an{'s' if years > 1 else ''}"
+
+
+    #to get the time ago of done promotion
     @property
     def time_since_end(self):
         """
@@ -113,6 +115,5 @@ class Promotion(models.Model):
             return f"il y a {months} mois"
         else:
             years = int(diff.days / 365)
-            return f"il y a {years} an{'s' if years > 1 else ''}"    
-   
-   
+            return f"il y a {years} an{'s' if years > 1 else ''}"
+

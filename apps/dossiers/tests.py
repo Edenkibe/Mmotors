@@ -1,12 +1,11 @@
-from django.test import TestCase, Client
-from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.messages import get_messages
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase
+from django.urls import reverse
 
-from apps.voiture.models import Voiture
 from apps.dossiers.form.dossierForm import DossierAchatForm
 from apps.dossiers.models import DossierAchat
-from django.core.files.uploadedfile import SimpleUploadedFile
+from apps.voiture.models import Voiture
 
 User = get_user_model()
 
@@ -29,7 +28,7 @@ class DepotDossierTest(TestCase):
         self.car = Voiture.objects.create(
             marque="Toyota",
             type="Achat",
-            disponibilite="Visible",          
+            disponibilite="Visible",
             modele="Corolla",
             annee=2020,
             prix=20000,
@@ -77,7 +76,7 @@ class DepotDossierTest(TestCase):
                 b"Contenu fictif du document PDF",
                 content_type="application/pdf"
             )
-        
+
         data = {
             "nom_complet": "John Doe",
             "telephone": "1234567890",
@@ -105,7 +104,7 @@ class DepotDossierTest(TestCase):
 
         self.assertEqual(dossier.client, self.user)
         self.assertEqual(dossier.vehicule, self.car)
-        
+
 # test sur la recherche de dossier par code_dossier:
 class SearchDossierTest(TestCase):
 
@@ -116,16 +115,16 @@ class SearchDossierTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
-       
-        self.client = Client()      
+
+        self.client = Client()
         # Connexion forcée de l'utilisateur avec force_login pour simuler un utilisateur connecté
         self.client.force_login(self.user)
-       
+
          # Créer une voiture disponible pour l'achat
         self.car1 = Voiture.objects.create(
             marque="Toyota",
             type="Achat",
-            disponibilite="Visible",          
+            disponibilite="Visible",
             modele="Corolla",
             annee=2020,
             prix=20000,
@@ -135,7 +134,7 @@ class SearchDossierTest(TestCase):
             etat="Bon",
             description="Voiture en parfait état"
         )
-        
+
                 # Créer une voiture non visible pour achat
         self.car2 = Voiture.objects.create(
             marque="BMW",
@@ -258,9 +257,9 @@ class SearchDossierTest(TestCase):
             "admin_template/partials/all_demande_ajax.html"
         )
 
-        self.assertEqual(response.context["total"], 2)      
+        self.assertEqual(response.context["total"], 2)
 
-#test sur la recherche de  voiture acheter:         
+#test sur la recherche de  voiture acheter:
 class SearchSoldCarTest(TestCase):
 
     def setUp(self):
@@ -270,16 +269,16 @@ class SearchSoldCarTest(TestCase):
                email='test@example.com',
                password='testpass123'
         )
-          
-        self.client = Client()      
+
+        self.client = Client()
         # Connexion forcée de l'utilisateur avec force_login pour simuler un utilisateur connecté
         self.client.force_login(self.user)
-          
+
         # Créer une voiture disponible pour l'achat
         self.car1 = Voiture.objects.create(
                marque="Toyota",
                type="Achat",
-               disponibilite="Visible",          
+               disponibilite="Visible",
                modele="Corolla",
                annee=2020,
                prix=20000,
@@ -289,7 +288,7 @@ class SearchSoldCarTest(TestCase):
                etat="Bon",
                description="Voiture en parfait état"
            )
-           
+
         # Créer une voiture non visible pour achat
         self.car2 = Voiture.objects.create(
                marque="BMW X5",
@@ -317,7 +316,7 @@ class SearchSoldCarTest(TestCase):
                 etat="Bon",
                 description="Voiture en excellent état"
         )
-   
+
         self.dossier1 = DossierAchat.objects.create(
                code_dossier="DOSSIER001",
                nom_complet="Pierre Martin",
@@ -329,7 +328,7 @@ class SearchSoldCarTest(TestCase):
                vehicule=self.car1,
                deal="acheté",
         )
-   
+
         self.dossier2 = DossierAchat.objects.create(
                code_dossier="DOSSIER002",
                nom_complet="Jean Dupont",
@@ -341,7 +340,7 @@ class SearchSoldCarTest(TestCase):
                vehicule=self.car2,
                deal="acheté",
         )
-   
+
         self.dossier3 = DossierAchat.objects.create(
             code_dossier="ABC123",
             nom_complet="Marie Curie",
@@ -354,7 +353,7 @@ class SearchSoldCarTest(TestCase):
             deal="en attente",
         )
         self.url = reverse("dossiers:search_sold_car")
-        
+
         print("\n===== TEST DATA =====")
 
         for dossier in DossierAchat.objects.all():
@@ -436,4 +435,4 @@ class SearchSoldCarTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["sold_car"]), 1)          
+        self.assertEqual(len(response.context["sold_car"]), 1)

@@ -1,14 +1,11 @@
 
-from django.test import TestCase, Client
-from django.urls import reverse
 from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-from django.db.models import Count, Exists, OuterRef
+from django.test import Client, TestCase
+from django.urls import reverse
 
 from apps.voiture.models import Voiture
 
+User = get_user_model()
 
 class VenteCarTest(TestCase):
 
@@ -29,7 +26,7 @@ class VenteCarTest(TestCase):
         self.car1 = Voiture.objects.create(
             marque="Toyota",
             type="Achat",
-            disponibilite="Visible",          
+            disponibilite="Visible",
             modele="Corolla",
             annee=2020,
             prix=20000,

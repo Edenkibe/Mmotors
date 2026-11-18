@@ -1,11 +1,12 @@
 
 from django.urls import path
+
 from . import views
 
 app_name = "locations"
 
 urlpatterns = [
-  path('creer_dossier_location/<int:id>/', views.creer_dossier_location, name='creer_dossier_location'), 
+  path('creer_dossier_location/<int:id>/', views.creer_dossier_location, name='creer_dossier_location'),
   path('success_location/', views.success_location, name='success_location'),
   path('get_demande_location/', views.get_demande_location, name='get_demande_location'),
   path('repondre_location/<int:id>', views.repondre_location, name='repondre_location'),
