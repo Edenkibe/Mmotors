@@ -15,7 +15,7 @@ def send_contact_email(contact, to_email):
         "contact_email.html",
         {
             "contact": contact,
-        }
+        },
     )
 
     email = EmailMessage(
@@ -23,46 +23,31 @@ def send_contact_email(contact, to_email):
         message_template,
         to=[to_email],
     )
-    email.content_subtype = "html" # this render the email as html without html tags:
+    email.content_subtype = "html"  # this render the email as html without html tags:
 
     return email.send()
+
 
 # here to contact the admin
 def contact_dossier(request):
 
     if request.method == "POST":
-
         form = ContactDossierForm(request.POST)
 
         if form.is_valid():
-
             contact = form.save()
 
-            send_contact_email(
-                contact,
-                "testeden8@gmail.com"
-            )
+            send_contact_email(contact, "testeden8@gmail.com")
 
-            messages.success(
-                request,
-                "Votre message a bien été envoyé."
-            )
+            messages.success(request, "Votre message a bien été envoyé.")
 
             return redirect("contact:success_page")
 
     else:
         form = ContactDossierForm()
 
+    return render(request, "index.html", {"form": form})
 
-    return render(
-        request,
-        "index.html",
-        {
-            "form": form
-        }
-    )
 
 def success_page(request):
     return render(request, "success_page.html")
-
-

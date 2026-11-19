@@ -21,29 +21,37 @@ from .models import DossierLocation
 
 logger = logging.getLogger(__name__)
 
+
 def creer_dossier_location(request, id):
     voiture = get_object_or_404(Voiture, id=id)
 
-    #if this exist in the dossier we shall show a text to the user that he already demanding this car:
-    dossier_exist=DossierLocation.objects.filter(
+    # if this exist in the dossier we shall show a text to the user that he already demanding this car:
+    dossier_exist = DossierLocation.objects.filter(
         vehicule=voiture,
-        status__in=['accepté','rejeté'],
+        status__in=["accepté", "rejeté"],
         client=request.user,
-        mysignature='not yet',
-        deal=['disponible']
-        ).exists()
-    count=DossierLocation.objects.filter(vehicule=voiture,status__in=['encours', 'accepté']).count()
+        mysignature="not yet",
+        deal=["disponible"],
+    ).exists()
+    count = DossierLocation.objects.filter(
+        vehicule=voiture, status__in=["encours", "accepté"]
+    ).count()
     if request.method == "POST":
         form = DossierLocationForm(request.POST)
 
         if form.is_valid():
-            date_depart = form.cleaned_data['date_depart']
-            date_retour = form.cleaned_data['date_retour']
+            date_depart = form.cleaned_data["date_depart"]
+            date_retour = form.cleaned_data["date_retour"]
 
             # Calculate booking days
             days = (date_retour - date_depart).days
             if days <= 0:
-                return render(request, "faile_request_location.html",{'voiture': voiture}, status=400)
+                return render(
+                    request,
+                    "faile_request_location.html",
+                    {"voiture": voiture},
+                    status=400,
+                )
 
             dossier = form.save(commit=False)
             dossier.client = request.user
@@ -54,18 +62,25 @@ def creer_dossier_location(request, id):
 
     else:
         form = DossierLocationForm()
-    context ={"form": form,"voiture": voiture,'dossier_exist': dossier_exist,'count': count}
+    context = {
+        "form": form,
+        "voiture": voiture,
+        "dossier_exist": dossier_exist,
+        "count": count,
+    }
     return render(request, "depot_location.html", context)
 
-#admin delete a user demande de location:
+
+# admin delete a user demande de location:
 @login_required
 @require_POST
 def admin_delete_location_request(request, id):
-    demande=get_object_or_404(DossierLocation, id=id)
+    demande = get_object_or_404(DossierLocation, id=id)
     demande.delete()
-    return redirect ('locations:get_demande_location')
+    return redirect("locations:get_demande_location")
 
-#recuperer la voiture pour la location: demander a l'utilisateur si il est d accord avec le prix de la location et le nombre de jours de location:
+
+# recuperer la voiture pour la location: demander a l'utilisateur si il est d accord avec le prix de la location et le nombre de jours de location:
 def user_satisfaction_location(request, id):
 
     dossier = get_object_or_404(DossierLocation, id=id, client=request.user)
@@ -74,12 +89,9 @@ def user_satisfaction_location(request, id):
     # la datte de retour doit être après la date de début, sinon on retourne une erreur: pour 1 jour
 
     total_price = dossier.vehicule.prix * days
-    context={
-        'dossier': dossier,
-        'days': days,
-        'total_price': total_price
-     }
+    context = {"dossier": dossier, "days": days, "total_price": total_price}
     return render(request, "user_satisfaction_location.html", context)
+
 
 # effacer le dossier location si l'utilisateur n'est pas satisfait du prix de la location ou du nombre de jours de location:
 def user_not_satisfied_location(request, id):
@@ -96,73 +108,74 @@ def unsuccess_location(request):
 def success_location(request):
     return render(request, "success_location.html")
 
+
 # view rejected booking in notification:user action
 def rejected_location(request, id):
 
+    # fetch the notification for the user  for the accepted or rejected demand in book mode:
 
-    #fetch the notification for the user  for the accepted or rejected demand in book mode:
+    notification = DossierLocation.objects.filter(
+        client=request.user, status__in=["accepté", "rejeté"], mysignature="not yet"
+    )
+    count_notification = notification.count()
+    # getting the demandes:
+    demande = get_object_or_404(
+        DossierLocation, id=id, status="rejeté", mysignature="not yet"
+    )
 
-    notification=DossierLocation.objects.filter(client=request.user,status__in=['accepté','rejeté'],mysignature='not yet')
-    count_notification=notification.count()
-    #getting the demandes:
-    demande=get_object_or_404(DossierLocation,id=id,status='rejeté',mysignature='not yet')
-
-    #when we click on this page we have to remove the notification by changing msignaturer not yet to signé:
-    demande.mysignature="signé"
+    # when we click on this page we have to remove the notification by changing msignaturer not yet to signé:
+    demande.mysignature = "signé"
     demande.save()
 
-    context={
-        'demande':demande,
-        'notification':notification,
-        'count_notification': count_notification
+    context = {
+        "demande": demande,
+        "notification": notification,
+        "count_notification": count_notification,
     }
-    return render(request,'rejected_location.html',context)
+    return render(request, "rejected_location.html", context)
 
 
-#admin getting all demand booking on the dashboard
+# admin getting all demand booking on the dashboard
 def get_demande_location(request):
 
     # all achat demande pending for the admin:
-    dossier=DossierAchat.objects.filter(verification ="pending...")
-    count=dossier.count()
+    dossier = DossierAchat.objects.filter(verification="pending...")
+    count = dossier.count()
 
-    #getting all pending demande  location for the admin and count them:
-    dossier_location=DossierLocation.objects.filter(status ="encours")
-    count_location=dossier_location.count()
+    # getting all pending demande  location for the admin and count them:
+    dossier_location = DossierLocation.objects.filter(status="encours")
+    count_location = dossier_location.count()
 
-    #count all demande booking in the system:
-    all_demandes=DossierLocation.objects.all().order_by('-id')
-    count_all_demandes=all_demandes.count()
+    # count all demande booking in the system:
+    all_demandes = DossierLocation.objects.all().order_by("-id")
+    count_all_demandes = all_demandes.count()
 
-    #all  demande en location in the system:ou en location running:
-    all_sold=DossierLocation.objects.filter(status="en location")
-    count_all_sold=all_sold.count()
+    # all  demande en location in the system:ou en location running:
+    all_sold = DossierLocation.objects.filter(status="en location")
+    count_all_sold = all_sold.count()
 
-
-    context={
-        'dossier':dossier,
-        'count':count,
-        'dossier_location':dossier_location,
-        'count_location':count_location,
-        'count_all_demandes':count_all_demandes,
-        "all_demandes":all_demandes,
-        'count_all_sold':count_all_sold,
+    context = {
+        "dossier": dossier,
+        "count": count,
+        "dossier_location": dossier_location,
+        "count_location": count_location,
+        "count_all_demandes": count_all_demandes,
+        "all_demandes": all_demandes,
+        "count_all_sold": count_all_sold,
     }
-    return render(request,"administration/new_booking.html",context)
+    return render(request, "administration/new_booking.html", context)
 
 
-#the admin search location demande by it unique code::
+# the admin search location demande by it unique code::
 def search_location(request):
     query = request.GET.get("q", "").strip()
 
-    #si la barre est vide on retourne tout le user
+    # si la barre est vide on retourne tout le user
     if query == "":
         dossier_user = DossierLocation.objects.filter().all()
 
     elif len(query) >= 2:
-        filters = (
-            Q(code_location__icontains=query)
-        )
+        filters = Q(code_location__icontains=query)
 
         dossier_user = DossierLocation.objects.filter(filters).all()
 
@@ -182,35 +195,30 @@ def search_location(request):
             context,
         )
 
-#repondre a une demande de location:
-def repondre_location(request,id):
 
-    #getting all pending demande d achat et location for the admin and count them:
-    dossier=DossierAchat.objects.filter(verification ="pending...")
-    count=dossier.count()
+# repondre a une demande de location:
+def repondre_location(request, id):
 
-    #get all booking car en pendind de validation:
+    # getting all pending demande d achat et location for the admin and count them:
+    dossier = DossierAchat.objects.filter(verification="pending...")
+    count = dossier.count()
+
+    # get all booking car en pendind de validation:
     booking_pending = DossierLocation.objects.filter(status="encours")
-    count_booking_pending=booking_pending.count()
+    count_booking_pending = booking_pending.count()
 
-    #admin is getting  a demande to reply to it:
-    demandes=get_object_or_404(DossierLocation,id=id)
+    # admin is getting  a demande to reply to it:
+    demandes = get_object_or_404(DossierLocation, id=id)
 
     if request.method == "POST":
-
         # Keep the status BEFORE saving the form
         old_status = demandes.status
 
-        form = Reply_locatioForm(
-            request.POST,
-            instance=demandes
-        )
+        form = Reply_locatioForm(request.POST, instance=demandes)
 
         if form.is_valid():
-
             try:
                 with transaction.atomic():
-
                     # Save the form
                     demandes = form.save()
 
@@ -220,35 +228,25 @@ def repondre_location(request,id):
                     # Only create/send Yousign when the status
                     # changes to "accepte"
                     if new_status == "accepté" and old_status != "accepté":
-
                         client = YousignClient()
 
                         # 1. Create the PDF contract
-                        client.generate_contract(
-                            demandes,
-                            "location"
-                        )
+                        client.generate_contract(demandes, "location")
 
                         # 2. Create Yousign signature request
                         signature_request = client.create_signature_request(
-                            demandes,
-                            "location"
+                            demandes, "location"
                         )
 
-                        demandes.yousign_request_id = (
-                            signature_request["id"]
-                        )
+                        demandes.yousign_request_id = signature_request["id"]
 
                         # 3. Upload the contract PDF
                         document = client.upload_document(
-                            signature_request["id"],
-                            demandes.contrat_pdf.path
+                            signature_request["id"], demandes.contrat_pdf.path
                         )
 
                         # 4. Save Yousign document ID
-                        demandes.yousign_document_id = (
-                            document["id"]
-                        )
+                        demandes.yousign_document_id = document["id"]
 
                         # 5. Add the client as signer
                         client.add_signer(
@@ -256,13 +254,11 @@ def repondre_location(request,id):
                             document["id"],
                             demandes.client.first_name,
                             demandes.client.last_name,
-                            demandes.client.email
+                            demandes.client.email,
                         )
 
                         # 6. Activate signature request
-                        client.activate(
-                            signature_request["id"]
-                        )
+                        client.activate(signature_request["id"])
 
                         # Save Yousign information
                         demandes.save(
@@ -275,42 +271,33 @@ def repondre_location(request,id):
                         messages.success(
                             request,
                             "La demande de location a été acceptée "
-                            "et le contrat a été envoyé pour signature."
+                            "et le contrat a été envoyé pour signature.",
                         )
 
                     elif new_status == "accepté" and old_status == "accepté":
-
                         # Already accepted.
                         # Don't create another Yousign request.
                         messages.success(
-                            request,
-                            "La demande de location a été mise à jour."
+                            request, "La demande de location a été mise à jour."
                         )
 
                     else:
-
                         messages.success(
-                            request,
-                            "Vous venez de répondre à une demande cliente."
+                            request, "Vous venez de répondre à une demande cliente."
                         )
 
                     # if the status new equal to rejeté do something:
             except Exception:
                 logger.exception("Yousign failed")
 
-                messages.error(
-                    request,
-                    "Erreur lors de la création du contrat Yousign"
-                )
+                messages.error(request, "Erreur lors de la création du contrat Yousign")
 
             return redirect("locations:redirect_after_responding")
 
-        #If form is invalid, the page will be rendered again
+        # If form is invalid, the page will be rendered again
 
     else:
-        form = Reply_locatioForm(
-            instance=demandes
-        )
+        form = Reply_locatioForm(instance=demandes)
 
     context = {
         "demandes": demandes,
@@ -321,91 +308,70 @@ def repondre_location(request,id):
         "count_booking_pending": count_booking_pending,
     }
 
-    return render(
-        request,
-        "administration/repondre_location.html",
-        context
-    )
+    return render(request, "administration/repondre_location.html", context)
 
-#redirect the admin after responding to a location demande:
+
+# redirect the admin after responding to a location demande:
 def redirect_after_responding(request):
 
     # all achat demande pending for the admin:
-    dossier=DossierAchat.objects.filter(verification ="pending...")
-    count=dossier.count()
+    dossier = DossierAchat.objects.filter(verification="pending...")
+    count = dossier.count()
 
-    #getting all pending demande  location for the admin and count them:
-    dossier_location=DossierLocation.objects.filter(status ="encours")
-    count_location=dossier_location.count()
+    # getting all pending demande  location for the admin and count them:
+    dossier_location = DossierLocation.objects.filter(status="encours")
+    count_location = dossier_location.count()
 
-    #count all demande booking in the system:
-    all_demandes=DossierLocation.objects.all().order_by('-id')
-    count_all_demandes=all_demandes.count()
+    # count all demande booking in the system:
+    all_demandes = DossierLocation.objects.all().order_by("-id")
+    count_all_demandes = all_demandes.count()
 
-    #all  demande en location in the system:ou en location running:
-    all_sold=DossierLocation.objects.filter(status="en location")
-    count_all_sold=all_sold.count()
+    # all  demande en location in the system:ou en location running:
+    all_sold = DossierLocation.objects.filter(status="en location")
+    count_all_sold = all_sold.count()
 
-    context={
-        'dossier':dossier,
-        'count':count,
-        'dossier_location':dossier_location,
-        'count_location':count_location,
-        'count_all_demandes':count_all_demandes,
-        "all_demandes":all_demandes,
-        'count_all_sold':count_all_sold,
+    context = {
+        "dossier": dossier,
+        "count": count,
+        "dossier_location": dossier_location,
+        "count_location": count_location,
+        "count_all_demandes": count_all_demandes,
+        "all_demandes": all_demandes,
+        "count_all_sold": count_all_sold,
     }
-    return render(request,"administration/result.html",context)
+    return render(request, "administration/result.html", context)
 
 
 # payement checkout de stripe de location:
 def location_car(request, id):
 
-    location_dossier = get_object_or_404(
-        DossierLocation,
-        id=id,
-        client=request.user
-    )
+    location_dossier = get_object_or_404(DossierLocation, id=id, client=request.user)
 
     # here i calculate the days of booking like:3 days of booking:
-    days = (
-    location_dossier.date_retour - location_dossier.date_depart
-    ).days
+    days = (location_dossier.date_retour - location_dossier.date_depart).days
 
     # if the date is less than zero:
     if days <= 0:
-      return HttpResponse(
-        "Invalid rental dates.",
-        status=400
-    )
+        return HttpResponse("Invalid rental dates.", status=400)
 
     # get the total days of booking:
     total_price = location_dossier.vehicule.prix * days
 
     # Check if the car is already rented
     if location_dossier.deal == "en location":
-        return HttpResponse(
-            "This car has already been booked."
-        )
+        return HttpResponse("This car has already been booked.")
 
     # Stripe expects cents
-    amount_cents = int(
-        Decimal(str(total_price)) * 100
-    )
+    amount_cents = int(Decimal(str(total_price)) * 100)
 
     session = stripe.checkout.Session.create(
-
         payment_method_types=["card"],
-
         mode="payment",
-
         line_items=[
             {
                 "price_data": {
                     "currency": "eur",
-
                     "unit_amount": amount_cents,
-
                     "product_data": {
                         "name": (
                             f"{location_dossier.vehicule.marque} "
@@ -413,15 +379,11 @@ def location_car(request, id):
                         ),
                     },
                 },
-
                 "quantity": 1,
             }
         ],
-
         customer_email=request.user.email,
-
         customer_creation="always",
-
         metadata={
             "type": "location",
             "location_id": str(location_dossier.id),
@@ -431,21 +393,15 @@ def location_car(request, id):
             "date_debut": str(location_dossier.date_depart),
             "date_fin": str(location_dossier.date_retour),
         },
-
-        success_url=request.build_absolute_uri(
-            "/payment-success/"
-        ),
-
-        cancel_url=request.build_absolute_uri(
-            "/payment-cancel/"
-        ),
+        success_url=request.build_absolute_uri("/payment-success/"),
+        cancel_url=request.build_absolute_uri("/payment-cancel/"),
     )
 
     # Save Stripe session ID
     payementLocation.objects.create(
-    location=location_dossier,
-    stripe_session_id=session.id,
-)
+        location=location_dossier,
+        stripe_session_id=session.id,
+    )
 
     return redirect(session.url)
 
@@ -453,33 +409,36 @@ def location_car(request, id):
 # here the user check the raison why the demand is rejected or accepted in Achat mode:
 def check_raison_booking(request, id):
 
-    notification=DossierAchat.objects.filter(client=request.user,verification__in=['accepté','rejeté'],mysignature='not yet')
-    count_notification=notification.count()
+    notification = DossierAchat.objects.filter(
+        client=request.user,
+        verification__in=["accepté", "rejeté"],
+        mysignature="not yet",
+    )
+    count_notification = notification.count()
 
-    #getting the demandes location:
-    demande=get_object_or_404(DossierLocation,id=id,status__in=['rejeté','accepté'],mysignature='signé')
+    # getting the demandes location:
+    demande = get_object_or_404(
+        DossierLocation, id=id, status__in=["rejeté", "accepté"], mysignature="signé"
+    )
 
-    context={
-        'demande':demande,
-        'notification':notification,
-        'count_notification': count_notification
+    context = {
+        "demande": demande,
+        "notification": notification,
+        "count_notification": count_notification,
     }
-    return render(request,'check_raison_booking.html',context)
+    return render(request, "check_raison_booking.html", context)
 
 
-#the user search location demande by it unique code::
+# the user search location demande by it unique code::
 def user_search_location(request):
     query = request.GET.get("q", "").strip()
 
     if query == "":
-        contract = DossierLocation.objects.filter(
-            client=request.user
-        ).order_by("-id")
+        contract = DossierLocation.objects.filter(client=request.user).order_by("-id")
 
     elif len(query) >= 2:
         contract = DossierLocation.objects.filter(
-            Q(code_location__icontains=query),
-            client=request.user
+            Q(code_location__icontains=query), client=request.user
         ).order_by("-id")
 
     else:
@@ -500,37 +459,25 @@ def user_search_location(request):
 
     # AJAX
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return render(
-            request,
-            "user_search_location_ajax.html",
-            context
-        )
+        return render(request, "user_search_location_ajax.html", context)
 
-    return render(
-        request,
-        "user_search_location_ajax.html",
-        context
-    )
+    return render(request, "user_search_location_ajax.html", context)
 
 
-#the user search achat demande by it unique code::
+# the user search achat demande by it unique code::
 def user_search_achat(request):
     query = request.GET.get("q", "").strip()
 
     if query == "":
-        contract = DossierAchat.objects.filter(
-            client=request.user
-        ).order_by("-id")
+        contract = DossierAchat.objects.filter(client=request.user).order_by("-id")
 
     elif len(query) >= 2:
         contract = DossierAchat.objects.filter(
-            Q(code_dossier__icontains=query),
-            client=request.user
+            Q(code_dossier__icontains=query), client=request.user
         ).order_by("-id")
 
     else:
         contract = DossierAchat.objects.none()
-
 
     context = {
         "query": query,
@@ -540,24 +487,17 @@ def user_search_achat(request):
 
     # AJAX
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return render(
-            request,
-            "user_search_achat_ajax.html",
-            context
-        )
+        return render(request, "user_search_achat_ajax.html", context)
 
-    return render(
-        request,
-        "user_search_achat_ajax.html",
-        context
-    )
+    return render(request, "user_search_achat_ajax.html", context)
+
 
 # get booking encours live:
 def live_booking(request):
     # Get all ongoing bookings
-    ongoing_bookings = DossierLocation.objects.filter(
-        deal="en location"
-    ).order_by("-id")
+    ongoing_bookings = DossierLocation.objects.filter(deal="en location").order_by(
+        "-id"
+    )
 
     for demande in ongoing_bookings:
         days = (demande.date_retour - demande.date_depart).days
@@ -571,27 +511,22 @@ def live_booking(request):
         "total": ongoing_bookings.count(),
     }
 
-    return render(
-        request,
-        "administration/live_booking.html",
-        context
-    )
+    return render(request, "administration/live_booking.html", context)
 
 
-#the user search location demande by it unique code::
+# the user search location demande by it unique code::
 def admin_search_ongoing_bookings(request):
     query = request.GET.get("q", "").strip()
 
     if query == "":
-        ongoing_bookings = DossierLocation.objects.filter(
-               deal="en location"
-           ).order_by("-id")
+        ongoing_bookings = DossierLocation.objects.filter(deal="en location").order_by(
+            "-id"
+        )
 
     elif len(query) >= 2:
         ongoing_bookings = DossierLocation.objects.filter(
-            Q(code_location__icontains=query),
-            deal="en location"
-            ).order_by("-id")
+            Q(code_location__icontains=query), deal="en location"
+        ).order_by("-id")
 
     else:
         ongoing_bookings = DossierLocation.objects.none()
@@ -611,15 +546,6 @@ def admin_search_ongoing_bookings(request):
 
     # AJAX
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return render(
-            request,
-            "administration/ajax/live_ajax.html",
-            context
-        )
+        return render(request, "administration/ajax/live_ajax.html", context)
 
-    return render(
-        request,
-        "administration/ajax/live_ajax.html",
-        context
-    )
-
+    return render(request, "administration/ajax/live_ajax.html", context)

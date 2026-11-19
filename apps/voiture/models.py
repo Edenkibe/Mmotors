@@ -11,64 +11,51 @@ class Voiture(models.Model):
     annee = models.IntegerField()
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
-    carburant_choise= [
-        ('Diesel', 'Diesel'),
-        ('hybride', 'hybride'),
-        ('electrique', 'electrique'),
-        ('essence', 'essence'),
+    carburant_choise = [
+        ("Diesel", "Diesel"),
+        ("hybride", "hybride"),
+        ("electrique", "electrique"),
+        ("essence", "essence"),
     ]
-    boite_choise= [
-        ('Manuel', 'Manuel'),
-        ('automatique', 'automatique'),
+    boite_choise = [
+        ("Manuel", "Manuel"),
+        ("automatique", "automatique"),
     ]
-    disponibilite_choise= [
-        ('visible', 'visible'),
-        ('invisible', 'invisible'),
+    disponibilite_choise = [
+        ("visible", "visible"),
+        ("invisible", "invisible"),
     ]
-    disponibilite=models.CharField(
-        max_length=20,
-        choices=disponibilite_choise,
-        default='visible'
+    disponibilite = models.CharField(
+        max_length=20, choices=disponibilite_choise, default="visible"
     )
-    boite=models.CharField(
-        max_length=20,
-        choices=boite_choise,
-        default='available'
-    )
-    carburant=models.CharField(
-        max_length=20,
-        choices=carburant_choise,
-        default='available'
+    boite = models.CharField(max_length=20, choices=boite_choise, default="available")
+    carburant = models.CharField(
+        max_length=20, choices=carburant_choise, default="available"
     )
     kilometre = models.PositiveIntegerField(
-        default=0,
-        help_text="Kilométrage du véhicule en km"
+        default=0, help_text="Kilométrage du véhicule en km"
     )
     Status_choices = [
-        ('Occasion', 'Occasion'),
-        ('New', 'New'),
-        ('super', 'super'),
+        ("Occasion", "Occasion"),
+        ("New", "New"),
+        ("super", "super"),
     ]
-    etat = models.CharField(
-        max_length=20,
-        choices=Status_choices,
-        default='available'
-    )
+    etat = models.CharField(max_length=20, choices=Status_choices, default="available")
     type_CHOICES = [
-        ('Location', 'Location'),
-        ('Achat', 'Achat'),
+        ("Location", "Location"),
+        ("Achat", "Achat"),
     ]
-    type = models.CharField(max_length=100, choices=type_CHOICES, default='Achat')
+    type = models.CharField(max_length=100, choices=type_CHOICES, default="Achat")
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.marque + " " + self.modele
 
-    #pour ciblé la photo principale sur l annonce
+    # pour ciblé la photo principale sur l annonce
     def main_photo(self):
         return self.photos.filter(is_main=True).first()
 
-    #to get the time ago of voiture added
+    # to get the time ago of voiture added
     @property
     def since_created(self):
         """
@@ -98,9 +85,7 @@ class Voiture(models.Model):
 
 class Photo(models.Model):
     voiture = models.ForeignKey(
-        Voiture,
-        on_delete=models.CASCADE,
-        related_name="photos"
+        Voiture, on_delete=models.CASCADE, related_name="photos"
     )
     image = models.ImageField(upload_to="voitures/")
     date_added = models.DateTimeField(auto_now_add=True)
@@ -109,8 +94,7 @@ class Photo(models.Model):
     def __str__(self):
         return f"Photo {self.voiture.modele}"
 
-
-    #getting the voiture image url to display it in the template
+    # getting the voiture image url to display it in the template
     @property
     def get_picture_url(self):
         if self.image:

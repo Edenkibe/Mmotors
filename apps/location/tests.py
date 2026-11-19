@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -8,13 +7,11 @@ from apps.voiture.models import Voiture
 
 User = get_user_model()
 
-class CreerDossierLocationTest(TestCase):
 
+class CreerDossierLocationTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
 
         self.client = Client()
@@ -23,7 +20,7 @@ class CreerDossierLocationTest(TestCase):
         self.client.force_login(self.user)
 
         self.voiture = Voiture.objects.create(
-        # Créer une voiture disponible pour l'achat
+            # Créer une voiture disponible pour l'achat
             marque="Toyota",
             type="Achat",
             disponibilite="Visible",
@@ -34,13 +31,11 @@ class CreerDossierLocationTest(TestCase):
             boite="Automatique",
             kilometre=50000,
             etat="Bon",
-            description="Voiture en parfait état"
-
+            description="Voiture en parfait état",
         )
 
         self.url = reverse(
-            "locations:creer_dossier_location",
-            kwargs={"id": self.voiture.id}
+            "locations:creer_dossier_location", kwargs={"id": self.voiture.id}
         )
 
     def test_affichage_page_get(self):
@@ -60,7 +55,7 @@ class CreerDossierLocationTest(TestCase):
         """Vérifie la création d'un dossier avec un formulaire valide."""
 
         data = {
-             "nom_complet": "Jean Dupont",
+            "nom_complet": "Jean Dupont",
             "telephone": "0612345678",
             "email": "jean.dupont@example.com",
             "adresse": "10 rue de Paris",
@@ -90,12 +85,8 @@ class CreerDossierLocationTest(TestCase):
         # Vérifier la redirection
         self.assertRedirects(
             response,
-            reverse(
-                "locations:user_satisfaction_location",
-                kwargs={"id": dossier.id}
-            )
+            reverse("locations:user_satisfaction_location", kwargs={"id": dossier.id}),
         )
-
 
     def test_post_formulaire_invalide(self):
         """Vérifie qu'un formulaire invalide ne crée aucun dossier."""
@@ -129,7 +120,6 @@ class CreerDossierLocationTest(TestCase):
             lieu_retour="Lieu de restitution",
             autre_lieu_depart="Adresse personnalisée du départ",
             autre_lieu_retour="Adresse personnalisée du retour",
-
             # Ajoute les autres champs obligatoires
         )
 
@@ -193,13 +183,7 @@ class CreerDossierLocationTest(TestCase):
         """Vérifie qu'une erreur 404 est retournée si la voiture n'existe pas."""
 
         response = self.client.get(
-            reverse(
-                "locations:creer_dossier_location",
-                kwargs={"id": 999999}
-            )
+            reverse("locations:creer_dossier_location", kwargs={"id": 999999})
         )
 
         self.assertEqual(response.status_code, 404)
-
-
-

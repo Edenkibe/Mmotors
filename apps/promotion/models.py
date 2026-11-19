@@ -8,34 +8,40 @@ from apps.voiture.models import Voiture
 
 # Create your models here
 
+
 class Promotion(models.Model):
-    creator=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True,related_name="user_promotion")
-    voiture= models.ForeignKey(
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="user_promotion",
+    )
+    voiture = models.ForeignKey(
         Voiture,
         on_delete=models.CASCADE,
         related_name="voiture_promotion",
     )
     titre = models.CharField(max_length=100)
     description = models.TextField()
-    disponibilite_choise= [
-        ('disponible', 'disponible'),
-        ('commencé', 'commencé'),
-        ('promotion done', 'promotion done'),
-        ('Bloqué', 'Bloqué'),
+    disponibilite_choise = [
+        ("disponible", "disponible"),
+        ("commencé", "commencé"),
+        ("promotion done", "promotion done"),
+        ("Bloqué", "Bloqué"),
     ]
-    disponibilite=models.CharField(
-        max_length=20,
-        choices=disponibilite_choise,
-        default='disponible'
+    disponibilite = models.CharField(
+        max_length=20, choices=disponibilite_choise, default="disponible"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     promotion_done_at = models.DateTimeField(null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+
     def __str__(self):
         return f"Promotion #{self.voiture.id}"
 
-     #to get the time ago of created_at
+    # to get the time ago of created_at
     @property
     def time_since_created(self):
         """
@@ -62,7 +68,7 @@ class Promotion(models.Model):
             years = int(diff.days / 365)
             return f"il y a {years} an{'s' if years > 1 else ''}"
 
-  #to get the time ago of accepted_at
+    # to get the time ago of accepted_at
     @property
     def time_since_started(self):
         """
@@ -89,8 +95,7 @@ class Promotion(models.Model):
             years = int(diff.days / 365)
             return f"il y a {years} an{'s' if years > 1 else ''}"
 
-
-    #to get the time ago of done promotion
+    # to get the time ago of done promotion
     @property
     def time_since_end(self):
         """
@@ -116,4 +121,3 @@ class Promotion(models.Model):
         else:
             years = int(diff.days / 365)
             return f"il y a {years} an{'s' if years > 1 else ''}"
-

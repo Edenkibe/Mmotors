@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 # This will update the `disponibilite` of promotion articles according
 # to their `start_date` and `end_date`.
-@shared_task(name='promotion.tasks.update_promotions')
+@shared_task(name="promotion.tasks.update_promotions")
 def update_promotions():
     now = timezone.now()
     print(now)
@@ -18,15 +18,13 @@ def update_promotions():
     try:
         # End promotions first
         Promotion.objects.filter(
-            end_date__lte=now,
-            disponibilite__in=['disponible', 'commencé']
-        ).update(disponibilite='promotion done')
+            end_date__lte=now, disponibilite__in=["disponible", "commencé"]
+        ).update(disponibilite="promotion done")
 
         # Start promotions
         Promotion.objects.filter(
-            start_date__lte=now,
-            disponibilite='disponible'
-        ).update(disponibilite='commencé')
+            start_date__lte=now, disponibilite="disponible"
+        ).update(disponibilite="commencé")
 
         logger.info("Promotion update completed successfully")
         return True
@@ -34,4 +32,3 @@ def update_promotions():
     except Exception:
         logger.exception("Failed to update promotions")
         raise
-

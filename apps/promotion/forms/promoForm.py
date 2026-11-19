@@ -14,27 +14,22 @@ class promotionForm(forms.ModelForm):
         ]
 
         widgets = {
-            "titre": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Ex : Pour la vie"
-            }),
-
-            "description": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 5,
-                "placeholder": "Décrivez votre véhicule..."
-            }),
-
-           'start_date': forms.DateTimeInput(attrs={
-                'class': 'form-control',
-                'type': 'datetime-local'
-            }),
-
-            'end_date': forms.DateTimeInput(attrs={
-                'class': 'form-control',
-                'type': 'datetime-local'
-            }),
-
+            "titre": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Ex : Pour la vie"}
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 5,
+                    "placeholder": "Décrivez votre véhicule...",
+                }
+            ),
+            "start_date": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
+            "end_date": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
         }
 
         labels = {
@@ -44,43 +39,31 @@ class promotionForm(forms.ModelForm):
             "end_date": "end_date",
         }
 
-#modifier form promo
+
+# modifier form promo
 class Promo_modificationForm(forms.ModelForm):
     class Meta:
         model = Promotion
-        fields = [
-            "titre",
-            "description",
-            "start_date",
-            "end_date",
-            "disponibilite"
-        ]
+        fields = ["titre", "description", "start_date", "end_date", "disponibilite"]
 
         widgets = {
-            "titre": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Ex : Pour la vie"
-            }),
-
-            "description": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 5,
-                "placeholder": "Décrivez votre véhicule..."
-            }),
-
-           'start_date': forms.DateTimeInput(attrs={
-                'class': 'form-control',
-                'type': 'datetime-local'
-            }),
-
-            'end_date': forms.DateTimeInput(attrs={
-                'class': 'form-control',
-                'type': 'datetime-local'
-            }),
-
-            "disponibilite": forms.Select(attrs={
-                "class": "form-select"
-            }),
+            "titre": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Ex : Pour la vie"}
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 5,
+                    "placeholder": "Décrivez votre véhicule...",
+                }
+            ),
+            "start_date": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
+            "end_date": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
+            "disponibilite": forms.Select(attrs={"class": "form-select"}),
         }
 
         labels = {

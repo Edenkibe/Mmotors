@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -7,14 +6,12 @@ from apps.voiture.models import Voiture
 
 User = get_user_model()
 
-class VenteCarTest(TestCase):
 
+class VenteCarTest(TestCase):
     def setUp(self):
         # Créer un utilisateur
         self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
 
         self.client = Client()
@@ -34,7 +31,7 @@ class VenteCarTest(TestCase):
             boite="Automatique",
             kilometre=50000,
             etat="Bon",
-            description="Voiture en parfait état"
+            description="Voiture en parfait état",
         )
 
         # Créer une voiture non visible pour achat
@@ -49,9 +46,8 @@ class VenteCarTest(TestCase):
             boite="Manuelle",
             kilometre=75000,
             etat="Bon",
-            description="Voiture en excellent état"
+            description="Voiture en excellent état",
         )
-
 
     def test_vente_car(self):
         # Vérifier que la page fonctionne correctement
@@ -61,7 +57,7 @@ class VenteCarTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_vente_car_uses_correct_template(self):
-        #Vérifier que le bon template est utilisé.
+        # Vérifier que le bon template est utilisé.
 
         response = self.client.get(reverse("voitures:vente_car"))
 
@@ -77,5 +73,3 @@ class VenteCarTest(TestCase):
         self.assertEqual(cars.count(), 1)
         self.assertIn(self.car1, cars)
         self.assertNotIn(self.car2, cars)
-
-

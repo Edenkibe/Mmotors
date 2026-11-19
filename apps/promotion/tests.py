@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -11,14 +10,11 @@ User = get_user_model()
 
 
 class CreatePromotionTest(TestCase):
-
     def setUp(self):
 
         # Créer un utilisateur
         self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
         self.client = Client()
 
@@ -37,14 +33,10 @@ class CreatePromotionTest(TestCase):
             boite="Automatique",
             kilometre=50000,
             etat="Bon",
-            description="Voiture en parfait état"
+            description="Voiture en parfait état",
         )
 
-        self.url = reverse(
-        "promotion:create_promotion",
-        kwargs={"id": self.car1.id}
-        )
-
+        self.url = reverse("promotion:create_promotion", kwargs={"id": self.car1.id})
 
     def test_create_promotion_get(self):
         """Vérifier l'affichage du formulaire."""
@@ -55,15 +47,9 @@ class CreatePromotionTest(TestCase):
 
         self.assertTemplateUsed(response, "create_pub.html")
 
-        self.assertIsInstance(
-            response.context["form"],
-            promotionForm
-        )
+        self.assertIsInstance(response.context["form"], promotionForm)
 
-        self.assertEqual(
-            response.context["get_car"],
-            self.car1
-        )
+        self.assertEqual(response.context["get_car"], self.car1)
 
     def test_create_promotion_displays_photos(self):
         """Vérifier que les photos de la voiture sont récupérées."""
@@ -73,7 +59,7 @@ class CreatePromotionTest(TestCase):
         self.assertQuerySetEqual(
             response.context["photos"],
             Photo.objects.filter(voiture=self.car1),
-            ordered=False
+            ordered=False,
         )
 
     def test_create_promotion_post_valid(self):
@@ -86,17 +72,14 @@ class CreatePromotionTest(TestCase):
             "end_date": "2023-12-31",
             "voiture": self.car1,
             "creator": self.user,
-            "disponibilite": "disponible"
+            "disponibilite": "disponible",
         }
 
         response = self.client.post(self.url, data)
 
         self.assertEqual(response.status_code, 302)
 
-        self.assertEqual(
-            Promotion.objects.count(),
-            1
-        )
+        self.assertEqual(Promotion.objects.count(), 1)
 
         promotion = Promotion.objects.first()
 
@@ -113,10 +96,7 @@ class CreatePromotionTest(TestCase):
 
         self.assertTemplateUsed(response, "create_pub.html")
 
-        self.assertEqual(
-            Promotion.objects.count(),
-            0
-        )
+        self.assertEqual(Promotion.objects.count(), 0)
 
         self.assertFalse(response.context["form"].is_valid())
 
@@ -127,7 +107,7 @@ class CreatePromotionTest(TestCase):
             "titre": "Toyota Camry",
             "description": "Voiture de luxe",
             "start_date": "2023-01-01",
-            "end_date": "2023-12-31"
+            "end_date": "2023-12-31",
         }
 
         response = self.client.post(self.url, data)
@@ -135,20 +115,14 @@ class CreatePromotionTest(TestCase):
         if response.status_code == 302:
             self.assertRedirects(
                 response,
-                reverse(
-                    "core:car_details",
-                    kwargs={"id": self.car1.id}
-                ),
-                fetch_redirect_response=False
+                reverse("core:car_details", kwargs={"id": self.car1.id}),
+                fetch_redirect_response=False,
             )
 
     def test_create_promotion_car_not_found(self):
         """Vérifier le comportement si la voiture n'existe pas."""
 
-        url = reverse(
-            "promotion:create_promotion",
-            kwargs={"id": 999999}
-        )
+        url = reverse("promotion:create_promotion", kwargs={"id": 999999})
 
         response = self.client.get(url)
 
