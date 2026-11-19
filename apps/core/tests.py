@@ -1,10 +1,12 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
+import requests
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
-from django.test import Client, TestCase
+from django.test import Client, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
+from apps.core.yousignservice import YousignClient
 from apps.dossiers.form.reply_demandeForm import ReplydossierForm
 from apps.dossiers.models import DossierAchat
 from apps.voiture.forms.voitureForm import typeForm
@@ -367,7 +369,7 @@ class RepondreTest(TestCase):
         self.assertEqual(self.dossier.verification, "rejeté")
 
     # 4. Vérifier qu'une demande déjà acceptée est simplement mise à jour
-    @patch("apps.core.yousignservice.YousignClient")
+    @patch("apps.core.yousignservice.requests.request")
     def test_demande_deja_acceptee(self, mock_yousign):
         self.dossier.verification = "accepté"
         self.dossier.save()
@@ -394,7 +396,7 @@ class RepondreTest(TestCase):
         self.assertTrue(response.context["form"].errors)
 
     # 6. Vérifier l'échec de Yousign
-    @patch("apps.core.yousignservice.YousignClient")
+    @patch("apps.core.yousignservice.requests.request")
     def test_erreur_yousign(self, mock_yousign):
         mock_yousign.return_value.generate_contract.side_effect = Exception(
             "Erreur Yousign"
@@ -407,3 +409,481 @@ class RepondreTest(TestCase):
         messages_list = self.get_messages_list(response)
 
         self.assertIn("Erreur lors de la création du contrat Yousign", messages_list)
+
+@override_settings(
+    YOUSIGN_BASE_URL="https://api-sandbox.yousign.app/v3",
+    YOUSIGN_API_KEY="fake-api-key",
+)
+class TestYousignClient(SimpleTestCase):
+
+    def setUp(self):
+        self.client = YousignClient()
+
+    # -------------------------------------------------
+    # 1. TEST INITIALISATION
+    # -------------------------------------------------
+
+    def test_client_initialization(self):
+        self.assertEqual(
+            self.client.base_url,
+            "https://api-sandbox.yousign.app/v3"
+        )
+
+        self.assertEqual(
+            self.client.api_key,
+            "fake-api-key"
+        )
+
+        self.assertEqual(
+            self.client.headers["Authorization"],
+            "Bearer fake-api-key"
+        )
+
+    # -------------------------------------------------
+    # 2. TEST CONFIGURATION MANQUANTE
+    # -------------------------------------------------
+
+    @override_settings(YOUSIGN_API_KEY="")
+    def test_request_without_api_key(self):
+        client = YousignClient()
+
+        with self.assertRaises(RuntimeError) as context:
+            client._request("GET", "/test")
+
+        self.assertIn(
+            "YouSign is not configured",
+            str(context.exception)
+        )
+
+    # -------------------------------------------------
+    # 3. TEST REQUEST SUCCESS
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_request_success(self, mock_request):
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        mock_request.return_value = mock_response
+
+        result = self.client._request(
+            "GET",
+            "https://api-sandbox.yousign.app/v3/test"
+        )
+
+        self.assertEqual(result, mock_response)
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "https://api-sandbox.yousign.app/v3/test",
+            timeout=30,
+            headers={
+                "Authorization": "Bearer fake-api-key",
+                "Accept": "application/json",
+            }
+        )
+
+    # -------------------------------------------------
+    # 4. TEST EXTRACTION ERREUR JSON
+    # -------------------------------------------------
+
+    def test_extract_error_detail_json(self):
+
+        response = MagicMock()
+
+        response.json.return_value = {
+            "detail": "Invalid signer parameters"
+        }
+
+        result = self.client._extract_error_detail(response)
+
+        self.assertEqual(
+            result,
+            "Invalid signer parameters"
+        )
+
+    # -------------------------------------------------
+    # 5. TEST EXTRACTION ERREUR TEXTE
+    # -------------------------------------------------
+
+    def test_extract_error_detail_text(self):
+
+        response = MagicMock()
+
+        response.json.side_effect = ValueError()
+
+        response.text = "Server error"
+
+        result = self.client._extract_error_detail(response)
+
+        self.assertEqual(result, "Server error")
+
+    # -------------------------------------------------
+    # 6. TEST ERREUR API 400
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_request_http_400(self, mock_request):
+
+        mock_response = MagicMock()
+
+        mock_response.status_code = 400
+        mock_response.reason = "Bad Request"
+
+        mock_response.json.return_value = {
+            "detail": "Invalid signer parameters"
+        }
+
+        mock_response.raise_for_status.side_effect = requests.HTTPError(
+            "400 Bad Request"
+        )
+
+        mock_request.return_value = mock_response
+
+        with self.assertRaises(RuntimeError) as context:
+
+            self.client._request(
+                "POST",
+                "https://api-sandbox.yousign.app/v3/signers"
+            )
+
+        self.assertIn(
+            "400 Bad Request",
+            str(context.exception)
+        )
+
+        self.assertIn(
+            "Invalid signer parameters",
+            str(context.exception)
+        )
+
+        mock_response.raise_for_status.assert_called_once()
+
+    # -------------------------------------------------
+    # 7. TEST CREATION DEMANDE ACHAT
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_create_signature_request_achat(self, mock_request):
+
+        demande = MagicMock()
+
+        demande.id = 3
+        demande.vehicule.marque = "Toyota"
+
+        mock_response = MagicMock()
+
+        mock_response.json.return_value = {
+            "id": "request-123",
+            "status": "draft"
+        }
+
+        mock_request.return_value = mock_response
+
+        result = self.client.create_signature_request(
+            demande,
+            "achat"
+        )
+
+        self.assertEqual(result["id"], "request-123")
+
+        args, kwargs = mock_request.call_args
+
+        self.assertEqual(args[0], "post")
+
+        self.assertEqual(
+            kwargs["json"],
+            {
+                "name": "contrat voiture Toyota",
+                "delivery_mode": "email",
+                "external_id": "achat-3",
+            }
+        )
+
+    # -------------------------------------------------
+    # 8. TEST CREATION DEMANDE LOCATION
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_create_signature_request_location(self, mock_request):
+
+        demande = MagicMock()
+
+        demande.id = 5
+        demande.vehicule.marque = "BMW"
+
+        mock_response = MagicMock()
+
+        mock_response.json.return_value = {
+            "id": "request-456"
+        }
+
+        mock_request.return_value = mock_response
+
+        result = self.client.create_signature_request(
+            demande,
+            "location"
+        )
+
+        self.assertEqual(result["id"], "request-456")
+
+        payload = mock_request.call_args.kwargs["json"]
+
+        self.assertEqual(
+            payload["name"],
+            "contrat location BMW"
+        )
+
+        self.assertEqual(
+            payload["external_id"],
+            "location-5"
+        )
+
+    # -------------------------------------------------
+    # 9. TEST TYPE CONTRAT INVALIDE
+    # -------------------------------------------------
+
+    def test_invalid_contract_type(self):
+
+        demande = MagicMock()
+
+        with self.assertRaises(ValueError):
+            self.client.create_signature_request(
+                demande,
+                "autre"
+            )
+
+    # -------------------------------------------------
+    # 10. TEST AJOUT SIGNATAIRE SUCCESS
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_add_signer_success(self, mock_request):
+
+        mock_response = MagicMock()
+
+        mock_response.status_code = 201
+        mock_response.text = '{"id": "signer-123"}'
+
+        mock_response.json.return_value = {
+            "id": "signer-123",
+            "status": "initiated"
+        }
+
+        mock_request.return_value = mock_response
+
+        result = self.client.add_signer(
+            request_id="request-123",
+            document_id="document-123",
+            first_name="Jean",
+            last_name="Dupont",
+            email="jean@example.com"
+        )
+
+        self.assertEqual(result["id"], "signer-123")
+
+        args, kwargs = mock_request.call_args
+
+        self.assertEqual(args[0], "post")
+
+        self.assertEqual(
+            args[1],
+            "https://api-sandbox.yousign.app/v3/signature_requests/request-123/signers"
+        )
+
+        payload = kwargs["json"]
+
+        self.assertEqual(
+            payload["info"]["first_name"],
+            "Jean"
+        )
+
+        self.assertEqual(
+            payload["info"]["last_name"],
+            "Dupont"
+        )
+
+        self.assertEqual(
+            payload["info"]["email"],
+            "jean@example.com"
+        )
+
+        self.assertEqual(
+            payload["signature_level"],
+            "electronic_signature"
+        )
+
+        self.assertEqual(
+            payload["fields"][0]["document_id"],
+            "document-123"
+        )
+
+    # -------------------------------------------------
+    # 11. TEST EMAIL INVALIDE
+    # -------------------------------------------------
+
+    def test_add_signer_invalid_email(self):
+
+        with self.assertRaises(ValueError):
+
+            self.client.add_signer(
+                "request-123",
+                "document-123",
+                "Jean",
+                "Dupont",
+                ""
+            )
+
+        with self.assertRaises(ValueError):
+
+            self.client.add_signer(
+                "request-123",
+                "document-123",
+                "Jean",
+                "Dupont",
+                "email-invalide"
+            )
+
+    # -------------------------------------------------
+    # 12. TEST ERREUR 400 LORS AJOUT SIGNATAIRE
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_add_signer_api_error_400(self, mock_request):
+
+        mock_request.side_effect = RuntimeError(
+            "YouSign API error: 400 Bad Request - Invalid signer parameters"
+        )
+
+        with self.assertRaises(RuntimeError) as context:
+
+            self.client.add_signer(
+                request_id="request-123",
+                document_id="document-123",
+                first_name="Jean",
+                last_name="Dupont",
+                email="jean@example.com"
+            )
+
+        self.assertIn(
+            "400 Bad Request",
+            str(context.exception)
+        )
+
+    # -------------------------------------------------
+    # 13. TEST ACTIVATION SIGNATURE
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_activate_signature(self, mock_request):
+
+        mock_response = MagicMock()
+
+        mock_response.json.return_value = {
+            "id": "request-123",
+            "status": "ongoing"
+        }
+
+        mock_request.return_value = mock_response
+
+        result = self.client.activate("request-123")
+
+        self.assertEqual(result["status"], "ongoing")
+
+        args, kwargs = mock_request.call_args
+
+        self.assertEqual(args[0], "post")
+
+        self.assertEqual(
+            args[1],
+            "https://api-sandbox.yousign.app/v3/signature_requests/request-123/activate"
+        )
+
+    # -------------------------------------------------
+    # 14. TEST TELECHARGEMENT DOCUMENT SIGNE
+    # -------------------------------------------------
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_download_signed_document(self, mock_request):
+
+        mock_response = MagicMock()
+
+        mock_response.content = b"FAKE PDF CONTENT"
+
+        mock_request.return_value = mock_response
+
+        result = self.client.download_signed_document(
+            "request-123"
+        )
+
+        self.assertEqual(
+            result,
+            b"FAKE PDF CONTENT"
+        )
+
+        args, kwargs = mock_request.call_args
+
+        self.assertEqual(args[0], "get")
+
+        self.assertIn(
+            "/documents/download",
+            args[1]
+        )
+
+    # -------------------------------------------------
+    # 15. TEST GENERATION CONTRAT TYPE INVALIDE
+    # -------------------------------------------------
+
+    def test_generate_contract_invalid_type(self):
+
+        demande = MagicMock()
+
+        with self.assertRaises(ValueError):
+
+            self.client.generate_contract(
+                demande,
+                "autre"
+            )
+
+# test add signer:
+@override_settings(
+    YOUSIGN_BASE_URL="https://api-sandbox.yousign.app/v3",
+    YOUSIGN_API_KEY="fake-api-key",
+)
+class TestYousignError(SimpleTestCase):
+
+    @patch("apps.core.yousignservice.requests.request")
+    def test_add_signer_returns_400_error(self, mock_request):
+
+        # Simulate YouSign's HTTP 400 response
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.reason = "Bad Request"
+        mock_response.json.return_value = {
+            "message": "You have some invalid params in your payload."
+        }
+
+        mock_response.raise_for_status.side_effect = requests.HTTPError(
+            "400 Client Error: Bad Request"
+        )
+
+        mock_request.return_value = mock_response
+
+        client = YousignClient()
+
+        # Check that your application raises the expected error
+        with self.assertRaises(RuntimeError) as context:
+            client.add_signer(
+                request_id="request-123",
+                document_id="document-123",
+                first_name="Jean",
+                last_name="Dupont",
+                email="jean@example.com",
+            )
+
+        self.assertIn("400 Bad Request", str(context.exception))
+        self.assertIn(
+            "You have some invalid params in your payload.",
+            str(context.exception),
+        )

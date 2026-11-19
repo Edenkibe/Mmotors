@@ -11,7 +11,6 @@ from weasyprint import HTML
 
 logger = logging.getLogger(__name__)
 
-
 class YousignClient:
     def __init__(self):
         self.base_url = settings.YOUSIGN_BASE_URL
@@ -142,8 +141,24 @@ class YousignClient:
 
     # add le signature:
     def add_signer(self, request_id, document_id, first_name, last_name, email):
+
+        first_name = (first_name or "").strip()
+        last_name = (last_name or "").strip()
+        email = (email or "").strip()
+
+        # Validation des informations
+        if not first_name:
+            raise ValueError("Le prénom du signataire est obligatoire.")
+
+        if not last_name:
+            raise ValueError("Le nom du signataire est obligatoire.")
+
         if not email or "@" not in email:
-            raise ValueError("Customer email is missing or invalid")
+            raise ValueError("Adresse email invalide.")
+
+        if not request_id or not document_id:
+            raise ValueError("Identifiants YouSign manquants.")
+
         url = f"{self.base_url}/signature_requests/{request_id}/signers"
 
         payload = {
@@ -151,7 +166,7 @@ class YousignClient:
                 "first_name": first_name,
                 "last_name": last_name,
                 "email": email,
-                "locale": "en",
+                "locale": "fr",
             },
             "signature_level": "electronic_signature",
             "signature_authentication_mode": "no_otp",
@@ -168,12 +183,12 @@ class YousignClient:
             ],
         }
 
-        print("ADD SIGNER URL:", url)
-        print("ADD SIGNER PAYLOAD:", payload)
+        logger.info("Adding signer to request %s", request_id)
+
         response = self._request("post", url, json=payload)
 
-        print("ADD SIGNER RESPONSE:", response.status_code)
-        print("ADD SIGNER BODY:", response.text)
+        logger.info("Signer successfully added to request %s", request_id)
+
         return response.json()
 
     # to activate the document and the user will receive the email automatically to yousign
