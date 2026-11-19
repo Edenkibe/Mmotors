@@ -10,12 +10,7 @@ from weasyprint import HTML
 
 def invoice(demandes):
 
-    image_path = os.path.join(
-        settings.BASE_DIR,
-        "static",
-        "img",
-        "logo.png"
-    )
+    image_path = os.path.join(settings.BASE_DIR, "static", "img", "logo.png")
 
     if os.path.exists(image_path):
         image_url = Path(image_path).resolve().as_uri()
@@ -28,7 +23,7 @@ def invoice(demandes):
             "demandes": demandes,
             "date": datetime.now(),
             "logo_path": image_url,
-        }
+        },
     )
 
     pdf = HTML(
@@ -44,14 +39,10 @@ def invoice(demandes):
         save=True,
     )
 
-def invoice_location(demandes,payer,days):
 
-    image_path = os.path.join(
-        settings.BASE_DIR,
-        "static",
-        "img",
-        "logo.png"
-    )
+def invoice_location(demandes, payer, days):
+
+    image_path = os.path.join(settings.BASE_DIR, "static", "img", "logo.png")
 
     if os.path.exists(image_path):
         image_url = Path(image_path).resolve().as_uri()
@@ -62,11 +53,11 @@ def invoice_location(demandes,payer,days):
         "pdf/invoice_location.html",
         {
             "demandes": demandes,
-            "payer":payer,
-            "days":days,
+            "payer": payer,
+            "days": days,
             "date": datetime.now(),
             "logo_path": image_url,
-        }
+        },
     )
 
     pdf = HTML(

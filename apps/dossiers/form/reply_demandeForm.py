@@ -4,23 +4,21 @@ from apps.dossiers.models import DossierAchat
 
 
 class ReplydossierForm(forms.ModelForm):
-
     class Meta:
         model = DossierAchat
-        fields = ['verification','message']
-
+        fields = ["verification", "message"]
 
         widgets = {
-            "verification": forms.Select(attrs={
-                "class": "form-select",
-            }),
-            "message": forms.Textarea(attrs={
-                "class": "form-control",
-                "placeholder": "your message",
-                "rows": 5
-            }),
+            "verification": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+            "message": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "your message",
+                    "rows": 5,
+                }
+            ),
         }
-
-
-
-

@@ -1,4 +1,3 @@
-
 """
 Django settings for config project.
 Mmotors - Development and Production configuration
@@ -31,19 +30,13 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.getenv(
-        "ALLOWED_HOSTS",
-        "localhost,127.0.0.1"
-    ).split(",")
+    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     if host.strip()
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv(
-        "CSRF_TRUSTED_ORIGINS",
-        ""
-    ).split(",")
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
     if origin.strip()
 ]
 
@@ -52,56 +45,55 @@ CSRF_TRUSTED_ORIGINS = [
 # =====================================================
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.humanize',
-
-    'apps.core',
-    'apps.accounts',
-    'django_recaptcha',
-    'widget_tweaks',
-    'apps.voiture',
-    'apps.promotion',
-    'django_celery_beat',
-    'apps.dossiers',
-    'apps.contact',
-    'apps.location',
-    'apps.integration',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "apps.core",
+    "apps.accounts",
+    "django_recaptcha",
+    "widget_tweaks",
+    "apps.voiture",
+    "apps.promotion",
+    "django_celery_beat",
+    "apps.dossiers",
+    "apps.contact",
+    "apps.location",
+    "apps.integration",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 # =====================================================
 # DATABASE - MYSQL
@@ -129,16 +121,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -146,8 +138,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # INTERNATIONALIZATION
 # =====================================================
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Europe/Paris'
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
 USE_TZ = True
@@ -156,15 +148,11 @@ USE_TZ = True
 # STATIC FILES
 # =====================================================
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = (
-    [BASE_DIR / 'static']
-    if (BASE_DIR / 'static').exists()
-    else []
-)
+STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
 
 STORAGES = {
     "default": {
@@ -179,14 +167,14 @@ STORAGES = {
 # MEDIA FILES
 # =====================================================
 
-MEDIA_URL = '/voitures/'
+MEDIA_URL = "/voitures/"
 MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", BASE_DIR / "voitures"))
 
 # =====================================================
 # AUTHENTICATION
 # =====================================================
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = "accounts.User"
 
 LOGIN_REDIRECT_URL = "/"
 
@@ -203,20 +191,17 @@ RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "")
 # EMAIL CONFIGURATION
 # =====================================================
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '').strip()
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '').replace(' ', '')
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").replace(" ", "")
 
-DEFAULT_FROM_EMAIL = os.getenv(
-    'DEFAULT_FROM_EMAIL',
-    EMAIL_HOST_USER
-)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 
 EMAIL_TIMEOUT = 20
 
@@ -234,38 +219,31 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
 YOUSIGN_API_KEY = os.getenv("YOUSIGN_API_KEY", "")
 YOUSIGN_BASE_URL = os.getenv("YOUSIGN_BASE_URL", "")
-YOUSIGN_WEBHOOK_SECRET = os.getenv(
-    "YOUSIGN_WEBHOOK_SECRET",
-    ""
-)
+YOUSIGN_WEBHOOK_SECRET = os.getenv("YOUSIGN_WEBHOOK_SECRET", "")
 
 # =====================================================
 # CELERY / REDIS
 # =====================================================
 
-CELERY_BROKER_URL = os.getenv(
-    "REDIS_URL",
-    "redis://127.0.0.1:6380/0"
-)
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6380/0")
 
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
-CELERY_TIMEZONE = 'Europe/Paris'
+CELERY_TIMEZONE = "Europe/Paris"
 CELERY_ENABLE_UTC = True
 
 CELERY_BEAT_SCHEDULE = {
-    'update-promotions-every-minute': {
-        'task': 'promotion.tasks.update_promotions',
-        'schedule': 60.0,
+    "update-promotions-every-minute": {
+        "task": "promotion.tasks.update_promotions",
+        "schedule": 60.0,
     },
-
-    'update-location-every-minute': {
-        'task': 'location.tasks.update_locations',
-        'schedule': 60.0,
+    "update-location-every-minute": {
+        "task": "location.tasks.update_locations",
+        "schedule": 60.0,
     },
 }
 
@@ -273,10 +251,7 @@ CELERY_BEAT_SCHEDULE = {
 # PRODUCTION SECURITY
 # =====================================================
 
-SECURE_PROXY_SSL_HEADER = (
-    "HTTP_X_FORWARDED_PROTO",
-    "https"
-)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
@@ -287,4 +262,4 @@ if not DEBUG:
 # DEFAULT PRIMARY KEY
 # =====================================================
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

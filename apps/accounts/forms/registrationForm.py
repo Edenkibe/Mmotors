@@ -9,26 +9,37 @@ from ..models import User
 class RegisterForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('email', 'username', 'password',)
-    username = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control rounded-left',
-        'placeholder': 'Username'
-    }))
-    email = forms.EmailField(widget=forms.EmailInput(attrs={
-        'class': 'form-control rounded-left',
-        'placeholder': 'Email'
-    }))
-    password= forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'form-control rounded-left',
-        'id': 'myInput',
-        'type': 'password',
-        'placeholder': 'Mot de passe'
-    }))
+        fields = (
+            "email",
+            "username",
+            "password",
+        )
 
-        # Custom validation using regex
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={"class": "form-control rounded-left", "placeholder": "Username"}
+        )
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={"class": "form-control rounded-left", "placeholder": "Email"}
+        )
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control rounded-left",
+                "id": "myInput",
+                "type": "password",
+                "placeholder": "Mot de passe",
+            }
+        )
+    )
+
+    # Custom validation using regex
     def clean_username(self):
-        username = self.cleaned_data['username']
-        if not re.match(r'[A-Za-z0-9_ ]{3,20}+$', username):
+        username = self.cleaned_data["username"]
+        if not re.match(r"[A-Za-z0-9_ ]{3,20}+$", username):
             raise ValidationError(
                 "Username must be 3-20 characters long and contain only letters, numbers, or underscores. and space"
             )
@@ -39,11 +50,10 @@ class RegisterForm(forms.ModelForm):
         return username
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data["email"]
         # simple regex for email (optional because EmailField already validates)
-        if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
             raise ValidationError("Enter a valid email address.")
-
 
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("This email already exists.")
@@ -61,33 +71,43 @@ class RegisterForm(forms.ModelForm):
 
         return user
 
+
 class admin_register_userForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('email', 'username', 'password', 'role')
-    username = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control rounded-left',
-        'placeholder': 'Username'
-    }))
-    email = forms.EmailField(widget=forms.EmailInput(attrs={
-        'class': 'form-control rounded-left',
-        'placeholder': 'Email'
-    }))
-    password= forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'form-control rounded-left',
-        'id': 'myInput',
-        'type': 'password',
-        'placeholder': 'Mot de passe'
-    }))
-    role = forms.ChoiceField(choices=User.role_choise, widget=forms.Select(attrs={
-        'class': 'form-control rounded-left',
-        'placeholder': 'Role'
-    }))
+        fields = ("email", "username", "password", "role")
 
-        # Custom validation using regex
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={"class": "form-control rounded-left", "placeholder": "Username"}
+        )
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={"class": "form-control rounded-left", "placeholder": "Email"}
+        )
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control rounded-left",
+                "id": "myInput",
+                "type": "password",
+                "placeholder": "Mot de passe",
+            }
+        )
+    )
+    role = forms.ChoiceField(
+        choices=User.role_choise,
+        widget=forms.Select(
+            attrs={"class": "form-control rounded-left", "placeholder": "Role"}
+        ),
+    )
+
+    # Custom validation using regex
     def clean_username(self):
-        username = self.cleaned_data['username']
-        if not re.match(r'[A-Za-z0-9_ ]{3,20}+$', username):
+        username = self.cleaned_data["username"]
+        if not re.match(r"[A-Za-z0-9_ ]{3,20}+$", username):
             raise ValidationError(
                 "Username must be 3-20 characters long and contain only letters, numbers, or underscores. and space"
             )
@@ -98,11 +118,10 @@ class admin_register_userForm(forms.ModelForm):
         return username
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data["email"]
         # simple regex for email (optional because EmailField already validates)
-        if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
             raise ValidationError("Enter a valid email address.")
-
 
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("This email already exists.")

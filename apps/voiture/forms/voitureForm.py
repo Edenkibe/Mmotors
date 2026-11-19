@@ -20,51 +20,30 @@ class VoitureForm(forms.ModelForm):
         ]
 
         widgets = {
-            "marque": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Ex : Peugeot"
-            }),
-
-            "modele": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Ex : 308 GT"
-            }),
-
-            "annee": forms.NumberInput(attrs={
-                "class": "form-control",
-                "min": 1950,
-                "placeholder": "Ex : 1950"
-            }),
-
-            "prix": forms.NumberInput(attrs={
-                "class": "form-control",
-                "step": "0.01",
-                "placeholder": "15000"
-            }),
-            "type": forms.Select(attrs={
-                 "class": "form-select"
-            }),
-            "carburant": forms.Select(attrs={
-                "class": "form-select"
-            }),
-
-            "boite": forms.Select(attrs={
-                "class": "form-select"
-            }),
-
-            "kilometre": forms.NumberInput(attrs={
-                "class": "form-control",
-                "min": 0
-            }),
-
-            "etat": forms.Select(attrs={
-                "class": "form-select"
-            }),
-            "description": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 5,
-                "placeholder": "Décrivez votre véhicule..."
-            }),
+            "marque": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Ex : Peugeot"}
+            ),
+            "modele": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Ex : 308 GT"}
+            ),
+            "annee": forms.NumberInput(
+                attrs={"class": "form-control", "min": 1950, "placeholder": "Ex : 1950"}
+            ),
+            "prix": forms.NumberInput(
+                attrs={"class": "form-control", "step": "0.01", "placeholder": "15000"}
+            ),
+            "type": forms.Select(attrs={"class": "form-select"}),
+            "carburant": forms.Select(attrs={"class": "form-select"}),
+            "boite": forms.Select(attrs={"class": "form-select"}),
+            "kilometre": forms.NumberInput(attrs={"class": "form-control", "min": 0}),
+            "etat": forms.Select(attrs={"class": "form-select"}),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 5,
+                    "placeholder": "Décrivez votre véhicule...",
+                }
+            ),
         }
 
         labels = {
@@ -109,7 +88,6 @@ class VoitureForm(forms.ModelForm):
         return km
 
 
-
 class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
@@ -118,19 +96,15 @@ class PhotoForm(forms.ModelForm):
             "is_main",
         ]
         widgets = {
-            "image": forms.FileInput(attrs={
-                "class": "form-control"
-            }),
-
-            'is_main': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            }),
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+            "is_main": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
         labels = {
-            'image': 'Photo',
-            'is_main': 'Photo principale',
+            "image": "Photo",
+            "is_main": "Photo principale",
         }
+
 
 class typeForm(forms.ModelForm):
     class Meta:
@@ -141,15 +115,10 @@ class typeForm(forms.ModelForm):
         ]
 
         widgets = {
-            "prix": forms.NumberInput(attrs={
-                "class": "form-control",
-                "step": "0.01",
-                "placeholder": "15000"
-            }),
-            "type": forms.Select(attrs={
-                 "class": "form-select"
-            }),
-
+            "prix": forms.NumberInput(
+                attrs={"class": "form-control", "step": "0.01", "placeholder": "15000"}
+            ),
+            "type": forms.Select(attrs={"class": "form-select"}),
         }
 
         labels = {

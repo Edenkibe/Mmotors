@@ -11,14 +11,12 @@ User = get_user_model()
 
 
 class DepotDossierTest(TestCase):
-
     def setUp(self):
         self.client = Client()
 
         # Créer un utilisateur
         self.user = User.objects.create_user(
-            username="testuser",
-            password="testpassword"
+            username="testuser", password="testpassword"
         )
 
         # Connecter l'utilisateur
@@ -36,14 +34,11 @@ class DepotDossierTest(TestCase):
             boite="Automatique",
             kilometre=50000,
             etat="Bon",
-            description="Voiture en parfait état"
+            description="Voiture en parfait état",
         )
 
         # URL de la vue
-        self.url = reverse(
-            "dossiers:depot_dossier",
-            kwargs={"id": self.car.id}
-        )
+        self.url = reverse("dossiers:depot_dossier", kwargs={"id": self.car.id})
 
     def test_depot_dossier_get(self):
         """Vérifier que la page s'affiche correctement."""
@@ -55,14 +50,10 @@ class DepotDossierTest(TestCase):
         self.assertIsInstance(response.context["form"], DossierAchatForm)
         self.assertEqual(response.context["get_car"], self.car)
 
-
     def test_depot_dossier_car_not_found(self):
         """Vérifier le comportement si la voiture n'existe pas."""
 
-        url = reverse(
-            "dossiers:depot_dossier",
-            kwargs={"id": 999999}
-        )
+        url = reverse("dossiers:depot_dossier", kwargs={"id": 999999})
 
         response = self.client.get(url)
 
@@ -72,31 +63,31 @@ class DepotDossierTest(TestCase):
         """Vérifier la création d'un dossier avec des données valides."""
 
         fichier = SimpleUploadedFile(
-                "piece_identite.pdf",
-                b"Contenu fictif du document PDF",
-                content_type="application/pdf"
-            )
+            "piece_identite.pdf",
+            b"Contenu fictif du document PDF",
+            content_type="application/pdf",
+        )
 
         data = {
             "nom_complet": "John Doe",
             "telephone": "1234567890",
             "email": "john.doe@example.com",
             "adresse": "123 Main St",
-            "piece_identite": fichier
+            "piece_identite": fichier,
         }
 
         response = self.client.post(self.url, data)
 
-        print("ERREURS :", response.context["form"].errors
+        print(
+            "ERREURS :",
+            response.context["form"].errors
             if response.context and response.context.get("form")
-            else "Aucune erreur")
+            else "Aucune erreur",
+        )
 
         self.assertEqual(response.status_code, 302)
 
-        self.assertRedirects(
-            response,
-            reverse("dossiers:success_dossier_depot")
-        )
+        self.assertRedirects(response, reverse("dossiers:success_dossier_depot"))
 
         self.assertEqual(DossierAchat.objects.count(), 1)
 
@@ -105,22 +96,20 @@ class DepotDossierTest(TestCase):
         self.assertEqual(dossier.client, self.user)
         self.assertEqual(dossier.vehicule, self.car)
 
+
 # test sur la recherche de dossier par code_dossier:
 class SearchDossierTest(TestCase):
-
     def setUp(self):
-       # Créer un utilisateur
+        # Créer un utilisateur
         self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
 
         self.client = Client()
         # Connexion forcée de l'utilisateur avec force_login pour simuler un utilisateur connecté
         self.client.force_login(self.user)
 
-         # Créer une voiture disponible pour l'achat
+        # Créer une voiture disponible pour l'achat
         self.car1 = Voiture.objects.create(
             marque="Toyota",
             type="Achat",
@@ -132,10 +121,10 @@ class SearchDossierTest(TestCase):
             boite="Automatique",
             kilometre=50000,
             etat="Bon",
-            description="Voiture en parfait état"
+            description="Voiture en parfait état",
         )
 
-                # Créer une voiture non visible pour achat
+        # Créer une voiture non visible pour achat
         self.car2 = Voiture.objects.create(
             marque="BMW",
             type="Achat",
@@ -147,7 +136,7 @@ class SearchDossierTest(TestCase):
             boite="Manuelle",
             kilometre=75000,
             etat="Bon",
-            description="Voiture en excellent état"
+            description="Voiture en excellent état",
         )
 
         self.dossier1 = DossierAchat.objects.create(
@@ -158,7 +147,7 @@ class SearchDossierTest(TestCase):
             email="pierre.martin@example.com",
             piece_identite="Passeport",
             client=self.user,
-            vehicule=self.car1
+            vehicule=self.car1,
         )
 
         self.dossier2 = DossierAchat.objects.create(
@@ -169,7 +158,7 @@ class SearchDossierTest(TestCase):
             email="jean.dupont@example.com",
             piece_identite="Passeport",
             client=self.user,
-            vehicule=self.car1
+            vehicule=self.car1,
         )
 
         self.dossier3 = DossierAchat.objects.create(
@@ -180,7 +169,7 @@ class SearchDossierTest(TestCase):
             email="marie.curie@example.com",
             piece_identite="Carte d'identité",
             client=self.user,
-            vehicule=self.car1
+            vehicule=self.car1,
         )
 
         self.url = reverse("dossiers:search_dossier")
@@ -245,29 +234,24 @@ class SearchDossierTest(TestCase):
         """Vérifier le template utilisé pour une requête AJAX."""
 
         response = self.client.get(
-            self.url,
-            {"q": "DOSSIER"},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+            self.url, {"q": "DOSSIER"}, HTTP_X_REQUESTED_WITH="XMLHttpRequest"
         )
 
         self.assertEqual(response.status_code, 200)
 
         self.assertTemplateUsed(
-            response,
-            "admin_template/partials/all_demande_ajax.html"
+            response, "admin_template/partials/all_demande_ajax.html"
         )
 
         self.assertEqual(response.context["total"], 2)
 
-#test sur la recherche de  voiture acheter:
-class SearchSoldCarTest(TestCase):
 
+# test sur la recherche de  voiture acheter:
+class SearchSoldCarTest(TestCase):
     def setUp(self):
-          # Créer un utilisateur
+        # Créer un utilisateur
         self.user = User.objects.create_user(
-               username='testuser',
-               email='test@example.com',
-               password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
 
         self.client = Client()
@@ -276,69 +260,69 @@ class SearchSoldCarTest(TestCase):
 
         # Créer une voiture disponible pour l'achat
         self.car1 = Voiture.objects.create(
-               marque="Toyota",
-               type="Achat",
-               disponibilite="Visible",
-               modele="Corolla",
-               annee=2020,
-               prix=20000,
-               carburant="Essence",
-               boite="Automatique",
-               kilometre=50000,
-               etat="Bon",
-               description="Voiture en parfait état"
-           )
+            marque="Toyota",
+            type="Achat",
+            disponibilite="Visible",
+            modele="Corolla",
+            annee=2020,
+            prix=20000,
+            carburant="Essence",
+            boite="Automatique",
+            kilometre=50000,
+            etat="Bon",
+            description="Voiture en parfait état",
+        )
 
         # Créer une voiture non visible pour achat
         self.car2 = Voiture.objects.create(
-               marque="BMW X5",
-               type="Achat",
-               disponibilite="Invisible",
-               modele="X5",
-               annee=2019,
-               prix=30000,
-               carburant="Diesel",
-               boite="Manuelle",
-               kilometre=75000,
-               etat="Bon",
-               description="Voiture en excellent état"
+            marque="BMW X5",
+            type="Achat",
+            disponibilite="Invisible",
+            modele="X5",
+            annee=2019,
+            prix=30000,
+            carburant="Diesel",
+            boite="Manuelle",
+            kilometre=75000,
+            etat="Bon",
+            description="Voiture en excellent état",
         )
-        self.car3= Voiture.objects.create(
-                marque="Tesla Model S",
-                type="Achat",
-                disponibilite="Invisible",
-                modele="Model S",
-                annee=2019,
-                prix=30000,
-                carburant="Diesel",
-                boite="Manuelle",
-                kilometre=75000,
-                etat="Bon",
-                description="Voiture en excellent état"
+        self.car3 = Voiture.objects.create(
+            marque="Tesla Model S",
+            type="Achat",
+            disponibilite="Invisible",
+            modele="Model S",
+            annee=2019,
+            prix=30000,
+            carburant="Diesel",
+            boite="Manuelle",
+            kilometre=75000,
+            etat="Bon",
+            description="Voiture en excellent état",
         )
 
         self.dossier1 = DossierAchat.objects.create(
-               code_dossier="DOSSIER001",
-               nom_complet="Pierre Martin",
-               telephone="06 11 22 33 44",
-               adresse="789 Boulevard Saint-Germain",
-               email="pierre.martin@example.com",
-               piece_identite="Passeport",
-               client=self.user,
-               vehicule=self.car1,
-               deal="acheté",
+            code_dossier="DOSSIER001",
+            nom_complet="Pierre Martin",
+            telephone="06 11 22 33 44",
+            adresse="789 Boulevard Saint-Germain",
+            email="pierre.martin@example.com",
+            piece_identite="Passeport",
+            client=self.user,
+            vehicule=self.car1,
+            deal="acheté",
         )
 
         self.dossier2 = DossierAchat.objects.create(
-               code_dossier="DOSSIER002",
-               nom_complet="Jean Dupont",
-               telephone="06 12 34 56 78",
-               adresse="123 Rue de la Paix",
-               email="jean.dupont@example.com",
-               piece_identite="Passeport",
-               client=self.user,
-               vehicule=self.car2,
-               deal="acheté",
+            code_dossier="DOSSIER002",
+            nom_complet="Jean Dupont",
+            telephone="06 12 34 56 78",
+            adresse="123 Rue de la Paix",
+            email="jean.dupont@example.com",
+            piece_identite="Passeport",
+            client=self.user,
+            vehicule=self.car2,
+            deal="acheté",
         )
 
         self.dossier3 = DossierAchat.objects.create(
@@ -361,7 +345,7 @@ class SearchSoldCarTest(TestCase):
                 dossier.code_dossier,
                 dossier.deal,
                 dossier.vehicule.marque,
-                dossier.vehicule.modele
+                dossier.vehicule.modele,
             )
 
         print("=====================\n")
@@ -378,9 +362,7 @@ class SearchSoldCarTest(TestCase):
     def test_search_sold_car_valid_query(self):
         """Vérifier la recherche par code de dossier."""
 
-        response = self.client.get(
-            self.url, {"q": "DOSSIER001"}
-        )
+        response = self.client.get(self.url, {"q": "DOSSIER001"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["sold_car"]), 1)
@@ -420,9 +402,7 @@ class SearchSoldCarTest(TestCase):
     def test_search_sold_car_no_result(self):
         """Vérifier le comportement lorsqu'aucun résultat ne correspond."""
 
-        response = self.client.get(
-            self.url, {"q": "INEXISTANT"}
-        )
+        response = self.client.get(self.url, {"q": "INEXISTANT"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["sold_car"]), 0)
@@ -430,9 +410,7 @@ class SearchSoldCarTest(TestCase):
     def test_search_sold_car_query_with_spaces(self):
         """Vérifier que les espaces autour de la recherche sont supprimés."""
 
-        response = self.client.get(
-            self.url, {"q": " DOSSIER001 "}
-        )
+        response = self.client.get(self.url, {"q": " DOSSIER001 "})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["sold_car"]), 1)

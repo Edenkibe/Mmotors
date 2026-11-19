@@ -295,9 +295,7 @@ Django fournit plusieurs méthodes pour manipuler les données.
 ### Créer un enregistrement
 
 ```python
-objet = MonModele.objects.create(
-    champ="valeur"
-)
+objet = MonModele.objects.create(champ="valeur")
 ```
 
 ### Récupérer tous les enregistrements
@@ -315,9 +313,7 @@ objet = MonModele.objects.get(id=1)
 ### Filtrer les enregistrements
 
 ```python
-objets = MonModele.objects.filter(
-    statut="en_attente"
-)
+objets = MonModele.objects.filter(statut="en_attente")
 ```
 
 ### Modifier un enregistrement
